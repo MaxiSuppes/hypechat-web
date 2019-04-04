@@ -1,12 +1,12 @@
-import React, {Component} from 'react';
+import React from "react";
+import Layout from "components/layout/Layout";
 
+export class Home extends React.Component {
+    organizationsId() {
+        return this.props.match.params['organizationId'];
+    }
 
-export class Home extends Component {
     render() {
-        return (
-            <div>
-                <p>Holaaaa</p>
-            </div>
-        )
+        return <Layout organizationId={this.organizationsId()}/>;
     }
 }

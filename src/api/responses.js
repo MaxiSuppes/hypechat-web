@@ -8,6 +8,10 @@ class Response {
     errors() {
         return this._errors;
     }
+
+    hasErrors() {
+        return Object.keys(this._errors).length > 0;
+    }
 }
 
 
@@ -17,3 +21,26 @@ export class GetOrganizationsResponse extends Response {
     }
 }
 
+export class GetOrganizationResponse extends Response {
+    organization() {
+        return this._result['organization'];
+    }
+}
+
+export class GetUsersResponse extends Response {
+    users() {
+        return this._result['users'];
+    }
+}
+
+export class GetChannelsResponse extends Response {
+    channels() {
+        return this._result['channels'];
+    }
+}
+
+export class GetForbiddenWordsResponse extends Response {
+    forbiddenWords() {
+        return this._result['forbiddenWords'];
+    }
+}
