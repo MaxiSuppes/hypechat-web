@@ -1,0 +1,10 @@
+.login-container {
+    max-width: 500px;
+    margin: auto;
+    padding-top: 100px;
+}
+
+.button {
+    min-width: 100px;
+    margin: 5px;
+}

@@ -14,6 +14,11 @@ class Response {
     }
 }
 
+export class LoginUserResponse extends Response {
+    token() {
+        return this._result['token'];
+    }
+}
 
 export class GetOrganizationsResponse extends Response {
     organizations() {

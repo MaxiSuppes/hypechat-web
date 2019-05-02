@@ -1,5 +1,6 @@
 import React from 'react';
 import {Layout} from "../components/layout/Layout";
+import {CollectionItem, Row, Collection} from "react-materialize";
 import {app} from '../utils/appConfig';
 
 export class Channels extends React.Component {
@@ -32,9 +33,19 @@ export class Channels extends React.Component {
 
     content() {
         return (
-            <ul>
-                {this.state.channels.map(channel => <li>{channel}</li>)}
-            </ul>
+            <Row style={{maxWidth: "700px"}}>
+                <Collection>
+                    {this.state.channels.map(channel => {
+                        return (
+                            <CollectionItem>
+                                <span className="title">
+                                    {channel}
+                                </span>
+                            </CollectionItem>
+                        )
+                    })}
+                </Collection>
+            </Row>
         )
     }
 

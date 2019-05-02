@@ -1,6 +1,6 @@
 import React from "react";
 import {SideNav, SideNavItem, NavItem, Navbar, Icon, Preloader} from "react-materialize";
-import "../../static/styles/layout/layout.css";
+import "../../static/styles/layout.css";
 
 export class Layout extends React.Component {
     renderContent() {

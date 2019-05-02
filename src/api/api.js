@@ -1,6 +1,10 @@
 import {JsonEncoder, MultiPartEncoder} from "./encoders";
 
 export class Api {
+    loginUser(loginData) {
+        throw new Error("You have to implement the method");
+    }
+
     getOrganizations() {
         throw new Error("You have to implement the method");
     }
@@ -27,6 +31,10 @@ export class RemoteApi extends Api {
     constructor(url) {
         super();
         this.url = url;
+    }
+
+    loginUser(loginData) {
+        return this.call('/users/login/', "POST", loginData);
     }
 
     getOrganizations() {
@@ -61,6 +69,7 @@ export class RemoteApi extends Api {
         }
 
         return fetch(this.url + resourceUrl, requestOptions).then((response) => {
+            console.log(response);
             return response.json();
         });
     }
@@ -77,6 +86,7 @@ export class FakeApi extends Api {
     constructor(props) {
         super(props);
 
+        this.token = 'AS45234ASF236rehfda24534';
         this.organizations = {
             1:
                 {
@@ -121,6 +131,15 @@ export class FakeApi extends Api {
         this.channels = ['general', 'random', 'otros'];
 
         this.forbiddenWords = ['Macri', 'Gato'];
+    }
+
+    loginUser(loginData) {
+        let self = this;
+        return new Promise(function (resolve, reject) {
+            setTimeout(function(){
+                resolve(new FakeResponse({'token': self.token}).successResponse());
+            }, 1000);
+        });
     }
 
     getOrganizations() {
