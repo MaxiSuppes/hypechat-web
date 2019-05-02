@@ -6,6 +6,7 @@ import {Home} from "./views/Home";
 import {Channels} from "./views/Channels";
 import {Users} from "./views/Users";
 import {ForbiddenWords} from "./views/ForbiddenWords";
+import {SignUp} from "./views/SignUp";
 
 class Routes extends React.Component {
     render() {
@@ -13,6 +14,7 @@ class Routes extends React.Component {
             <Router>
                 <div>
                     <Route exact path="/" component={Login}/>
+                    <Route exact path="/signup" component={SignUp}/>
                     <Route exact path="/organizations" component={Organizations}/>
                     <Route exact path="/:organizationId/edit" component={Home}/>
                     <Route exact path="/:organizationId/channels" component={Channels}/>

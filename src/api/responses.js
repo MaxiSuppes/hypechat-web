@@ -14,9 +14,15 @@ class Response {
     }
 }
 
+export class SignUpUserResponse extends Response {
+    token() {
+        return this._result['auth_token'];
+    }
+}
+
 export class LoginUserResponse extends Response {
     token() {
-        return this._result['token'];
+        return this._result['auth_token'];
     }
 }
 

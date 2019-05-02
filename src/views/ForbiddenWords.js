@@ -1,5 +1,6 @@
 import React from 'react';
 import {Layout} from "../components/layout/Layout";
+import {CollectionItem, Row, Collection} from "react-materialize";
 import {app} from '../utils/appConfig';
 
 export class ForbiddenWords extends React.Component {
@@ -32,9 +33,19 @@ export class ForbiddenWords extends React.Component {
 
     content() {
         return (
-            <ul>
-                {this.state.forbiddenWords.map(word => <li>{word}</li>)}
-            </ul>
+            <Row style={{maxWidth: "700px"}}>
+                <Collection>
+                    {this.state.forbiddenWords.map(word => {
+                        return (
+                            <CollectionItem>
+                                    <span className="title">
+                                        {word}
+                                    </span>
+                            </CollectionItem>
+                        )
+                    })}
+                </Collection>
+            </Row>
         )
     }
 

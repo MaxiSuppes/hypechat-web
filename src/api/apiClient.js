@@ -1,10 +1,17 @@
 import {GetOrganizationsResponse, GetOrganizationResponse, GetUsersResponse, GetChannelsResponse,
-    GetForbiddenWordsResponse, LoginUserResponse
+    GetForbiddenWordsResponse, LoginUserResponse, SignUpUserResponse
 } from "./responses";
 
 export class ApiClient {
     constructor(api) {
         this.api = api;
+    }
+
+    signUpUser(newUserData, onResponse = undefined) {
+        return this.api.signUpUser(newUserData).then(result => {
+            let response = new SignUpUserResponse(result);
+            if (onResponse) onResponse(response);
+        });
     }
 
     loginUser(loginData, onResponse = undefined) {

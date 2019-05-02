@@ -1,6 +1,10 @@
 import {JsonEncoder, MultiPartEncoder} from "./encoders";
 
 export class Api {
+    signUpUser(newUserData) {
+        throw new Error("You have to implement the method");
+    }
+
     loginUser(loginData) {
         throw new Error("You have to implement the method");
     }
@@ -33,8 +37,12 @@ export class RemoteApi extends Api {
         this.url = url;
     }
 
+    signUpUser(newUserData) {
+        return this.call('/users', "POST", newUserData);
+    }
+
     loginUser(loginData) {
-        return this.call('/users/login/', "POST", loginData);
+        return this.call('/users/login', "POST", loginData);
     }
 
     getOrganizations() {
@@ -112,25 +120,35 @@ export class FakeApi extends Api {
 
         this.users = [
             {
-                userName: 'maxisuppes',
-                name: 'Maximiliano Suppes',
-                email: 'maxi@suppes.com'
+                id: 'maxisuppes',
+                email: 'maxi@suppes.com',
+                password: 'asdasd'
             },
             {
-                userName: 'tomaslubertino',
-                name: 'Tomas Lubertino',
-                email: 'tomas@lubertino.com'
+                id: 'tomaslubertino',
+                email: 'tomas@lubertino.com',
+                password: 'asdasd'
             },
             {
-                userName: 'cristianraña',
-                name: 'Cristina Raña',
-                email: 'cris@raña.com'
+                id: 'cristianraña',
+                email: 'cris@raña.com',
+                password: 'asdasd'
             }
         ];
 
         this.channels = ['general', 'random', 'otros'];
 
         this.forbiddenWords = ['Macri', 'Gato'];
+    }
+
+    signUpUser(newUserData) {
+        this.users.push(newUserData);
+        let self = this;
+        return new Promise(function (resolve, reject) {
+            setTimeout(function(){
+                resolve(new FakeResponse({'token': self.token}).successResponse());
+            }, 1000);
+        });
     }
 
     loginUser(loginData) {

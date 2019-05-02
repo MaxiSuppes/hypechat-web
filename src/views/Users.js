@@ -1,5 +1,6 @@
 import React from 'react';
 import {Layout} from "../components/layout/Layout";
+import {CollectionItem, Row, Collection} from "react-materialize";
 import {app} from '../utils/appConfig';
 
 export class Users extends React.Component {
@@ -32,9 +33,22 @@ export class Users extends React.Component {
 
     content() {
         return (
-            <ul>
-                {this.state.users.map(user => <li>{user.userName}</li>)}
-            </ul>
+            <Row style={{maxWidth: "700px"}}>
+                <Collection>
+                    {this.state.users.map(user => {
+                        return (
+                            <CollectionItem>
+                                <span className="title">
+                                    {user.id}
+                                </span>
+                                <p>
+                                    {user.email}
+                                </p>
+                            </CollectionItem>
+                        )
+                    })}
+                </Collection>
+            </Row>
         )
     }
 
