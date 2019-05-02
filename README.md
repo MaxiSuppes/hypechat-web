@@ -14,7 +14,7 @@ Run `npm install` in the project directory.
   2. In WebStorm, right-click on **src** folder and select **Mark Directory as Source root** option.
 
 ### Creating docker image
-Run `docker image build -t react`.
+Run `docker image build -t react .`.
  
  
 ## Running the app
