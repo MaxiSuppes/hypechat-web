@@ -86,26 +86,13 @@ export class EditTeamResponse extends Response {
     }
 }
 
-export class GetOrganizationResponse extends Response {
-    organization() {
-        return this._result['organization'];
-    }
-}
 
 export class GetUsersResponse extends Response {
+    hasError() {
+        return this.status() === 'WRONG_CREDENTIALS';
+    }
+
     users() {
         return this._result['users'];
-    }
-}
-
-export class GetChannelsResponse extends Response {
-    channels() {
-        return this._result['channels'];
-    }
-}
-
-export class GetForbiddenWordsResponse extends Response {
-    forbiddenWords() {
-        return this._result['forbiddenWords'];
     }
 }

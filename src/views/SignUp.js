@@ -2,6 +2,7 @@ import React from "react";
 import {Button, Card, Row, TextInput} from "react-materialize";
 import "../static/styles/login.css";
 import {app} from '../utils/appConfig';
+import {toast} from 'react-toastify';
 
 export class SignUp extends React.Component {
     constructor(props) {
@@ -23,8 +24,9 @@ export class SignUp extends React.Component {
         if (response.hasError()) {
             this.setState({errorMessage: response.error()});
         } else {
-            localStorage.setItem("token", response.token());
-            this.props.history.push("/organizations");
+            toast("Bienvenido", {type: toast.TYPE.SUCCESS});
+            sessionStorage.setItem("userName", response.user()['username']);
+            this.props.history.push("/teams");
         }
     }
 

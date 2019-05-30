@@ -2,6 +2,9 @@ import React from "react";
 import {Button, Collection, CollectionItem, Icon, Preloader, Row} from "react-materialize";
 import noImage from '../static/images/no-image.png';
 import {app} from "../utils/appConfig";
+import {ToastContainer} from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import "../static/styles/layout.css";
 
 export class Teams extends React.Component {
     constructor(props) {
@@ -38,7 +41,7 @@ export class Teams extends React.Component {
                 <Collection>
                     {this.state.teams.map(team => {
                         return (
-                            <CollectionItem className="avatar" href={`teams/${team['id']}`}>
+                            <CollectionItem key={team['id']} className="avatar" href={`teams/${team['id']}`}>
                                 <img src={noImage} alt="" className="circle"/>
                                 <span className="title">
                                     {team['team_name']}
@@ -71,30 +74,32 @@ export class Teams extends React.Component {
     }
 
     content() {
-        return (
-            <Row style={{maxWidth: "700px"}}>
-                <Row>
-                    {this.showTeams()}
-                    {this.noTeamsMessage()}
-                </Row>
-                <Row className="center-align">
-                    <Button m={12} s={12} className="button" onClick={this.handleCreateTeam} large>
-                        Crear un equipo
-                    </Button>
-                </Row>
-            </Row>
-        )
+        if (this.state.loading) {
+            return <Preloader size="big" />;
+        } else {
+            return (
+                <div>
+                    <Row>
+                        {this.showTeams()}
+                        {this.noTeamsMessage()}
+                    </Row>
+                    <Row className="center-align">
+                        <Button m={12} s={12} className="button" onClick={this.handleCreateTeam} large>
+                            Crear un equipo
+                        </Button>
+                    </Row>
+                </div>
+            )
+        }
     }
 
     render() {
-        if (this.state.loading) {
-            return (
-                <div className="center-align">
-                    <Preloader size="big" />
-                </div>
-            )
-        } else {
-            return this.content();
-        }
+        return (
+            <div className="section-container center-align">
+                <ToastContainer/>
+                {this.content()}
+            </div>
+        );
+
     }
 }

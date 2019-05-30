@@ -1,8 +1,16 @@
 import React from "react";
 import {SideNav, SideNavItem, NavItem, Navbar, Icon, Preloader} from "react-materialize";
 import "../../static/styles/layout.css";
+import noImage from "../../static/images/no-image.png"
+import defaultUserImage from "../../static/images/default-user.png"
+import {ToastContainer} from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 export class Layout extends React.Component {
+    userName() {
+        return sessionStorage.getItem("userName");
+    }
+
     renderContent() {
         if (this.props.loading) {
             return (
@@ -18,6 +26,7 @@ export class Layout extends React.Component {
     render() {
         return (
             <div>
+                <ToastContainer/>
                 <Navbar className="nav-bar" left>
                     <SideNav
                         className="side-nav"
@@ -31,18 +40,16 @@ export class Layout extends React.Component {
                         options={{ closeOnClick: true }}>
                         <SideNavItem userView
                                      user={{
-                                         background: 'https://placeimg.com/640/480/tech',
-                                         image: 'https://placeimg.com/640/480/tech',
-                                         name: 'John Doe',
+                                         background: noImage,
+                                         image: defaultUserImage,
+                                         name: this.userName(),
                                      }}/>
-                        <SideNavItem href="/2/users">
+                        <SideNavItem href={this.props.teamId + '/users'}>
                             Usuarios
                         </SideNavItem>
-                        <SideNavItem href="/2/channels">
-                            Canales
-                        </SideNavItem>
-                        <SideNavItem href="/2/words">
-                            Palabras
+                        <SideNavItem divider/>
+                        <SideNavItem href='/teams'>
+                            Cambiar de equipo
                         </SideNavItem>
                     </SideNav>
                 </Navbar>

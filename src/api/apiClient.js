@@ -1,8 +1,6 @@
 import {
     CreateTeamResponse,
     EditTeamResponse,
-    GetChannelsResponse,
-    GetForbiddenWordsResponse,
     GetTeamsResponse,
     GetUsersResponse,
     LoginUserResponse,
@@ -70,30 +68,21 @@ export class ApiClient {
         });
     }
 
-    getOrganization(organizationId, onResponse = undefined) {
-        return this.api.getOrganization(organizationId).then(result => {
-            let response = new GetTeamsResponse(result);
-            if (onResponse) onResponse(response);
-        });
-    }
-
-    getUsers(organizationId, onResponse = undefined) {
-        return this.api.getUsers(organizationId).then(result => {
+    getUsers(teamId, onResponse = undefined) {
+        return this.api.getUsers(teamId).then(result => {
             let response = new GetUsersResponse(result);
             if (onResponse) onResponse(response);
         });
     }
 
-    getChannels(organizationId, onResponse = undefined) {
-        return this.api.getChannels(organizationId).then(result => {
-            let response = new GetChannelsResponse(result);
-            if (onResponse) onResponse(response);
-        });
-    }
+    inviteUser(teamId, email, onResponse = undefined) {
+        const requestData = {
+            "email": email,
+        };
 
-    getForbiddenWords(organizationId, onResponse = undefined) {
-        return this.api.getForbiddenWords(organizationId).then(result => {
-            let response = new GetForbiddenWordsResponse(result);
+        return this.api.inviteUser(teamId, requestData).then(result => {
+            console.log("result", result);
+            let response = new GetUsersResponse(result);
             if (onResponse) onResponse(response);
         });
     }

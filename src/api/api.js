@@ -18,19 +18,15 @@ export class Api {
         throw new Error("You have to implement the method");
     }
 
-    getOrganization(organizationId) {
+    editTeam(teamId, newTeamData) {
         throw new Error("You have to implement the method");
     }
 
-    getUsers(organizationId) {
+    getUsers(teamId) {
         throw new Error("You have to implement the method");
     }
 
-    getChannels(organizationId) {
-        throw new Error("You have to implement the method");
-    }
-
-    getForbiddenWords(organizationId) {
+    inviteUser(teamId, userData) {
         throw new Error("You have to implement the method");
     }
 }
@@ -62,20 +58,12 @@ export class RemoteApi extends Api {
         return this.call({resourceUrl: '/teams/' + teamId, method: "PATCH", body: newTeamData, withAuthorization: true})
     }
 
-    getOrganization(organizationId) {
-        return this.call('organizations/' + organizationId);
+    getUsers(teamId) {
+        return this.call({resourceUrl: '/teams/' + teamId + '/users', withAuthorization: true});
     }
 
-    getUsers(organizationId) {
-        return this.call('organizations/' + organizationId + '/users');
-    }
-
-    getChannels(organizationId) {
-        return this.call('organizations/' + organizationId + '/channels');
-    }
-
-    getForbiddenWords(organizationId) {
-        return this.call('organizations/' + organizationId + '/forbidden-words');
+    inviteUser(teamId, userData) {
+        return this.call({resourceUrl: '/teams/' + teamId + '/invite', method: 'POST', body: userData, withAuthorization: true});
     }
 
     private

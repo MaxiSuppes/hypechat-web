@@ -92,7 +92,7 @@ export class Team extends React.Component {
     content() {
         return (
             <div className="login-container">
-                <Card title="Nuevo equipo">
+                <Card title="Editar equipo">
                     <form onSubmit={this.handleEdit}>
                         <Row>
                             <TextInput s={12} m={6} type="text" label="Nombre"
@@ -126,6 +126,6 @@ export class Team extends React.Component {
     }
 
     render() {
-        return <Layout content={this.content} loading={this.state.loading}/>;
+        return <Layout teamId={this.state.teamId} content={this.content} loading={this.state.loading}/>;
     }
 }

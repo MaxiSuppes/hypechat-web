@@ -1,0 +1,14 @@
+.invite-container {
+    max-width: 500px;
+    margin: auto;
+    padding-top: 100px;
+}
+
+.invite-form {
+    background-color: white;
+    margin-top: -30px;
+}
+
+.invite-button {
+    margin-top: 30px;
+}
