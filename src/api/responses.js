@@ -1,34 +1,88 @@
 
+export class ErrorResponse {
+    constructor(apiResponse) {
+        this._status = apiResponse.status;
+        this._message = apiResponse.statusText;
+    }
+
+    message() {
+        return this._message;
+    }
+
+    status() {
+        return this._status;
+    }
+}
+
 class Response {
     constructor(apiResponse) {
-        this._errors = apiResponse['errors'];
-        this._result = apiResponse['result'];
+        this._result = apiResponse;
     }
 
-    errors() {
-        return this._errors;
+    error() {
+        return this._result["meesage"]
     }
 
-    hasErrors() {
-        return Object.keys(this._errors).length > 0;
+    hasError() {
+        throw new Error("You have to implement the method");
+    }
+
+    status() {
+        return this._result['status']
+    }
+
+    result() {
+        return this._result;
     }
 }
 
 export class SignUpUserResponse extends Response {
-    token() {
-        return this._result['auth_token'];
+    hasError() {
+        return this.status() === 'ALREADY_REGISTERED';
+    }
+
+    user() {
+        return this.result()['user'];
     }
 }
 
 export class LoginUserResponse extends Response {
-    token() {
-        return this._result['auth_token'];
+    hasError() {
+        return this.status() === 'WRONG_CREDENTIALS';
+    }
+
+    user() {
+        return this.result()['user'];
     }
 }
 
-export class GetOrganizationsResponse extends Response {
-    organizations() {
-        return this._result['organizations'];
+export class GetTeamsResponse extends Response {
+    hasError() {
+        return this.status() === 'WRONG_CREDENTIALS';
+    }
+
+    teams() {
+        return this.result()['teams'];
+    }
+}
+
+export class CreateTeamResponse extends Response {
+    hasError() {
+        return this.status() === 'WRONG_CREDENTIALS';
+    }
+
+    team() {
+        return this.result()['team'];
+    }
+}
+
+export class EditTeamResponse extends Response {
+    hasError() {
+        return this.status() === 'WRONG_CREDENTIALS';
+    }
+
+    team() {
+        return this.result()['team'];
     }
 }
 

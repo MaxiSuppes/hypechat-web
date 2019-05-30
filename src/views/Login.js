@@ -1,14 +1,14 @@
 import React from "react";
-import {Button, Card, Row, TextInput} from "react-materialize";
+import {Button, Card, Row, TextInput, Preloader} from "react-materialize";
 import "../static/styles/login.css";
-import {app} from '../utils/appConfig';
+import {app} from 'utils/appConfig';
 
 export class Login extends React.Component {
     constructor(props) {
         super(props);
 
         this.state = {
-            loading: true,
+            loading: false,
             email: {},
             password: {}
         };
@@ -19,16 +19,16 @@ export class Login extends React.Component {
     }
 
     handleApiResponse(response) {
-        console.log(response);
-        if (response.hasErrors()) {
-            this.setState({errorMessage: response.errors()[0]});
+        this.setState({loading: false});
+        if (response.hasError()) {
+            this.setState({errorMessage: response.error()});
         } else {
-            localStorage.setItem("token", response.token());
-            this.props.history.push("/organizations");
+            this.props.history.push("/teams");
         }
     }
 
     handleLogin(event) {
+        this.setState({loading: true});
         event.preventDefault();
         app.apiClient().loginUser({email: this.state.email, password: this.state.password}, this.handleApiResponse);
     }
@@ -37,6 +37,28 @@ export class Login extends React.Component {
         return (event) => {
             const value = event.target.value;
             this.setState({[inputName]: value});
+        }
+    }
+
+    showLoginButton() {
+        if (this.state.loading) {
+            return (
+                <Row className="center-align">
+                    <Preloader size="big" />
+                </Row>
+            )
+        } else {
+            return (
+                <Row className="center-align">
+                    <Button m={6} s={12} className="button" type="submit" small>
+                        Login
+                    </Button>
+                    <Button m={6} s={12} className="button" onClick={() => this.props.history.push("/signup")}
+                            small>
+                        Registrarse
+                    </Button>
+                </Row>
+            )
         }
     }
 
@@ -53,15 +75,7 @@ export class Login extends React.Component {
                             <TextInput s={12} type="password" label="Password"
                                        onChange={this.handleInputChange('password')} validate required/>
                         </Row>
-                        <Row className="center-align">
-                            <Button m={6} s={12} className="button" type="submit" small>
-                                Login
-                            </Button>
-                            <Button m={6} s={12} className="button" onClick={() => this.props.history.push("/signup")}
-                                    small>
-                                Registrarse
-                            </Button>
-                        </Row>
+                        {this.showLoginButton()}
                     </form>
                 </Card>
             </div>

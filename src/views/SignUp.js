@@ -20,9 +20,8 @@ export class SignUp extends React.Component {
     }
 
     handleApiResponse(response) {
-        console.log(response);
-        if (response.hasErrors()) {
-            this.setState({errorMessage: response.errors()[0]});
+        if (response.hasError()) {
+            this.setState({errorMessage: response.error()});
         } else {
             localStorage.setItem("token", response.token());
             this.props.history.push("/organizations");
@@ -32,7 +31,7 @@ export class SignUp extends React.Component {
     handleSignUp(event) {
         event.preventDefault();
         app.apiClient().signUpUser({
-            id: this.state.username,
+            username: this.state.username,
             email: this.state.email,
             password: this.state.password},
             this.handleApiResponse);

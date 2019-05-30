@@ -1,5 +1,12 @@
-import {GetOrganizationsResponse, GetOrganizationResponse, GetUsersResponse, GetChannelsResponse,
-    GetForbiddenWordsResponse, LoginUserResponse, SignUpUserResponse
+import {
+    CreateTeamResponse,
+    EditTeamResponse,
+    GetChannelsResponse,
+    GetForbiddenWordsResponse,
+    GetTeamsResponse,
+    GetUsersResponse,
+    LoginUserResponse,
+    SignUpUserResponse
 } from "./responses";
 
 export class ApiClient {
@@ -21,16 +28,51 @@ export class ApiClient {
         });
     }
 
-    getOrganizations(onResponse = undefined) {
-        return this.api.getOrganizations().then(result => {
-            let response = new GetOrganizationsResponse(result);
+    getTeams(onResponse = undefined) {
+        return this.api.getTeams().then(result => {
+            let response = new GetTeamsResponse(result);
+            if (onResponse) onResponse(response);
+        });
+    }
+
+    createTeam(newTeamData, onResponse = undefined) {
+        const requestData = {
+            "team_name": newTeamData['name'],
+            "location": newTeamData['location'],
+            "description": newTeamData['description'],
+            "welcome_message": newTeamData['welcomeMessage']
+        };
+
+        return this.api.createTeam(requestData).then(result => {
+            let response = new CreateTeamResponse(result);
+            if (onResponse) onResponse(response);
+        });
+    }
+
+    editTeam(teamId, teamData, onResponse = undefined) {
+        const mapFields = {
+            'name': "team_name",
+            'location': "location",
+            "description": 'description',
+            "welcomeMessage": 'welcome_message'
+        };
+
+        let requestData = {};
+        Object.keys(teamData).forEach(fieldName => {
+            if (teamData[fieldName] !== '' && teamData[fieldName] !== undefined) {
+                requestData[mapFields[fieldName]] = teamData[fieldName];
+            }
+        });
+
+        return this.api.editTeam(teamId, requestData).then(result => {
+            let response = new EditTeamResponse(result);
             if (onResponse) onResponse(response);
         });
     }
 
     getOrganization(organizationId, onResponse = undefined) {
         return this.api.getOrganization(organizationId).then(result => {
-            let response = new GetOrganizationResponse(result);
+            let response = new GetTeamsResponse(result);
             if (onResponse) onResponse(response);
         });
     }

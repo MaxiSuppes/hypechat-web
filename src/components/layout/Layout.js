@@ -11,7 +11,7 @@ export class Layout extends React.Component {
                 </div>
             )
         } else {
-            return this.props.content;
+            return this.props.content();
         }
     }
 

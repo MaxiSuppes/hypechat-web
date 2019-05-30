@@ -1,4 +1,5 @@
 import {JsonEncoder, MultiPartEncoder} from "./encoders";
+import {ErrorResponse} from "./responses";
 
 export class Api {
     signUpUser(newUserData) {
@@ -9,7 +10,11 @@ export class Api {
         throw new Error("You have to implement the method");
     }
 
-    getOrganizations() {
+    getTeams() {
+        throw new Error("You have to implement the method");
+    }
+
+    createTeam() {
         throw new Error("You have to implement the method");
     }
 
@@ -38,15 +43,23 @@ export class RemoteApi extends Api {
     }
 
     signUpUser(newUserData) {
-        return this.call('/users', "POST", newUserData);
+        return this.call({resourceUrl: '/users', method: "POST", body: newUserData, headersToHandle: ['X-Auth-Token']});
     }
 
     loginUser(loginData) {
-        return this.call('/users/login', "POST", loginData);
+        return this.call({resourceUrl: '/users/login', method: "POST", body:loginData, headersToHandle: ['X-Auth-Token']});
     }
 
-    getOrganizations() {
-        return this.call('organizations/');
+    getTeams() {
+        return this.call({resourceUrl: '/users/teams', withAuthorization: true});
+    }
+
+    createTeam(newTeamData) {
+        return this.call({resourceUrl: '/teams', method: "POST", body: newTeamData, withAuthorization: true})
+    }
+
+    editTeam(teamId, newTeamData) {
+        return this.call({resourceUrl: '/teams/' + teamId, method: "PATCH", body: newTeamData, withAuthorization: true})
     }
 
     getOrganization(organizationId) {
@@ -66,19 +79,36 @@ export class RemoteApi extends Api {
     }
 
     private
-    call(resourceUrl, method = 'GET', body = undefined, contentType = 'application/json') {
+    handleHeaders(response, headersToHandle) {
+        headersToHandle.forEach(headerName => {
+            const headerValue = response.headers.get(headerName);
+            sessionStorage.setItem(headerName, headerValue);
+        });
+    }
+
+    private
+    call({resourceUrl, method = 'GET', body = undefined, contentType = 'application/json', withAuthorization = false, headersToHandle = []}) {
         let headers = {'Accept': 'application/json'};
-        let encoder = this.encoderFor(contentType);
+        if (withAuthorization) {
+            headers['X-Auth-Token'] = sessionStorage.getItem('X-Auth-Token');
+        }
         let requestOptions = {method: method, headers: headers};
 
+        let encoder = this.encoderFor(contentType);
         if (method !== 'GET') {
             Object.assign(headers, encoder.headers());
             Object.assign(requestOptions, {body: encoder.encode(body)});
         }
 
         return fetch(this.url + resourceUrl, requestOptions).then((response) => {
-            console.log(response);
-            return response.json();
+            if (headersToHandle.length > 0) this.handleHeaders(response, headersToHandle);
+
+            console.log("response", response);
+            if (response.status === 200) {
+                return response.json();
+            }
+
+            return ErrorResponse(response);
         });
     }
 
