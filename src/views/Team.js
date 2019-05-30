@@ -73,7 +73,6 @@ export class Team extends React.Component {
 
     team() {
         const team = this.state.teams.filter(team => team['id'].toString() === this.state.teamId)[0];
-        console.log("this.state.teams", this.state.teams);
         return team;
     }
 

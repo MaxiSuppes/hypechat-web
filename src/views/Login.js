@@ -11,7 +11,8 @@ export class Login extends React.Component {
         this.state = {
             loading: false,
             email: {},
-            password: {}
+            password: {},
+            errorMessage: ''
         };
 
         this.handleApiResponse = this.handleApiResponse.bind(this);
@@ -22,7 +23,7 @@ export class Login extends React.Component {
     handleApiResponse(response) {
         this.setState({loading: false});
         if (response.hasError()) {
-            this.setState({errorMessage: response.error()});
+            this.setState({errorMessage: "Usuario o contraseña incorrectos"});
         } else {
             toast("Holaa!", {type: toast.TYPE.SUCCESS});
             sessionStorage.setItem("userName", response.user()['username']);
@@ -31,7 +32,7 @@ export class Login extends React.Component {
     }
 
     handleLogin(event) {
-        this.setState({loading: true});
+        this.setState({loading: true, errorMessage: ''});
         event.preventDefault();
         app.apiClient().loginUser({email: this.state.email, password: this.state.password}, this.handleApiResponse);
     }
@@ -77,6 +78,11 @@ export class Login extends React.Component {
                         <Row>
                             <TextInput s={12} type="password" label="Password"
                                        onChange={this.handleInputChange('password')} validate required/>
+                        </Row>
+                        <Row className="center-align">
+                            <p style={{'color': 'red'}}>
+                                {this.state.errorMessage}
+                            </p>
                         </Row>
                         {this.showLoginButton()}
                     </form>

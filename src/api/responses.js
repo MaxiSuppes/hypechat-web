@@ -1,16 +1,16 @@
 
 export class ErrorResponse {
     constructor(apiResponse) {
-        this._status = apiResponse.status;
+        this.status = apiResponse.status;
         this._message = apiResponse.statusText;
     }
 
-    message() {
-        return this._message;
+    hasError() {
+        return true;
     }
 
-    status() {
-        return this._status;
+    error() {
+        return this._message;
     }
 }
 
@@ -20,7 +20,7 @@ class Response {
     }
 
     error() {
-        return this._result["meesage"]
+        return this._result["message"]
     }
 
     hasError() {

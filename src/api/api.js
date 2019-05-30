@@ -91,12 +91,11 @@ export class RemoteApi extends Api {
         return fetch(this.url + resourceUrl, requestOptions).then((response) => {
             if (headersToHandle.length > 0) this.handleHeaders(response, headersToHandle);
 
-            console.log("response", response);
             if (response.status === 200) {
                 return response.json();
             }
 
-            return ErrorResponse(response);
+            return new ErrorResponse(response);
         });
     }
 

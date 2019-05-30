@@ -14,14 +14,26 @@ export class ApiClient {
 
     signUpUser(newUserData, onResponse = undefined) {
         return this.api.signUpUser(newUserData).then(result => {
-            let response = new SignUpUserResponse(result);
+            let response;
+            if (result.status === 400) {
+                response = result;
+            } else {
+                response = new SignUpUserResponse(result);
+            }
+
             if (onResponse) onResponse(response);
         });
     }
 
     loginUser(loginData, onResponse = undefined) {
         return this.api.loginUser(loginData).then(result => {
-            let response = new LoginUserResponse(result);
+            let response;
+            if (result.status === 404) {
+                response = result;
+            } else {
+                response = new LoginUserResponse(result);
+            }
+
             if (onResponse) onResponse(response);
         });
     }
@@ -81,7 +93,6 @@ export class ApiClient {
         };
 
         return this.api.inviteUser(teamId, requestData).then(result => {
-            console.log("result", result);
             let response = new GetUsersResponse(result);
             if (onResponse) onResponse(response);
         });

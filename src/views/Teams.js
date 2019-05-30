@@ -63,7 +63,7 @@ export class Teams extends React.Component {
     noTeamsMessage() {
         if (this.state.teams.length === 0) {
             return (
-                <div>
+                <div className="center-align">
                     <Icon large>
                         info
                     </Icon>
@@ -84,7 +84,7 @@ export class Teams extends React.Component {
                         {this.noTeamsMessage()}
                     </Row>
                     <Row className="center-align">
-                        <Button m={12} s={12} className="button" onClick={this.handleCreateTeam} large>
+                        <Button m={6} s={12} className="button" onClick={this.handleCreateTeam} large>
                             Crear un equipo
                         </Button>
                     </Row>
@@ -95,7 +95,7 @@ export class Teams extends React.Component {
 
     render() {
         return (
-            <div className="section-container center-align">
+            <div className="section-container">
                 <ToastContainer/>
                 {this.content()}
             </div>
