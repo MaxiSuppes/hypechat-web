@@ -1,7 +1,7 @@
 import React from "react";
 import {Button, Card, Row, TextInput} from "react-materialize";
 import "../static/styles/login.css";
-import {app} from '../utils/appConfig';
+import {app} from '../app/app';
 import {toast} from 'react-toastify';
 
 export class SignUp extends React.Component {

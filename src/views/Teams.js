@@ -1,7 +1,7 @@
 import React from "react";
 import {Button, Collection, CollectionItem, Icon, Preloader, Row} from "react-materialize";
 import noImage from '../static/images/no-image.png';
-import {app} from "../utils/appConfig";
+import {app} from "../app/app";
 import {ToastContainer} from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import "../static/styles/layout.css";
@@ -67,7 +67,7 @@ export class Teams extends React.Component {
                     <Icon large>
                         info
                     </Icon>
-                    <p>Aún no creaste ni sos adminisitrador de ningún equipo.</p>
+                    <p>Aún no hay equipos creados en la app.</p>
                 </div>
             )
         }

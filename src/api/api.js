@@ -10,6 +10,10 @@ export class Api {
         throw new Error("You have to implement the method");
     }
 
+    logOutUser() {
+        throw new Error("You have to implement the method");
+    }
+
     getTeams() {
         throw new Error("You have to implement the method");
     }
@@ -29,6 +33,14 @@ export class Api {
     inviteUser(teamId, userData) {
         throw new Error("You have to implement the method");
     }
+
+    getUser(userId) {
+        throw new Error("You have to implement the method");
+    }
+
+    deleteUser(teamId, userId) {
+        throw new Error("You have to implement the method");
+    }
 }
 
 
@@ -44,6 +56,10 @@ export class RemoteApi extends Api {
 
     loginUser(loginData) {
         return this.call({resourceUrl: '/users/login', method: "POST", body:loginData, headersToHandle: ['X-Auth-Token']});
+    }
+
+    logOutUser() {
+        return this.call({resourceUrl: '/users/logout', method: "POST", withAuthorization: true});
     }
 
     getTeams() {
@@ -66,6 +82,15 @@ export class RemoteApi extends Api {
         return this.call({resourceUrl: '/teams/' + teamId + '/invite', method: 'POST', body: userData, withAuthorization: true});
     }
 
+    getUser(teamId, userId) {
+        return this.call({resourceUrl: '/teams/' + teamId +  '/users/' + userId + '/profile', withAuthorization: true});
+    }
+
+    deleteUser(teamId, userId) {
+        return this.call({resourceUrl: '/teams/' + teamId + '/users/' + userId, method: 'DELETE', withAuthorization: true});
+    }
+
+
     private
     handleHeaders(response, headersToHandle) {
         headersToHandle.forEach(headerName => {
@@ -84,8 +109,10 @@ export class RemoteApi extends Api {
 
         let encoder = this.encoderFor(contentType);
         if (method !== 'GET') {
-            Object.assign(headers, encoder.headers());
-            Object.assign(requestOptions, {body: encoder.encode(body)});
+            if (body !== undefined) {
+                Object.assign(headers, encoder.headers());
+                Object.assign(requestOptions, {body: encoder.encode(body)});
+            }
         }
 
         return fetch(this.url + resourceUrl, requestOptions).then((response) => {

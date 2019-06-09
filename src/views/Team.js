@@ -1,6 +1,6 @@
 import React from "react";
-import {Layout} from "../components/layout/Layout";
-import {app} from '../utils/appConfig';
+import Layout from "../components/layout/Layout";
+import {app} from '../app/app';
 import {Button, Card, Preloader, Row, Textarea, TextInput} from "react-materialize";
 
 export class Team extends React.Component {
@@ -12,18 +12,11 @@ export class Team extends React.Component {
             saving: false,
             teams: [],
             teamId: props.match.params.teamId,
-            actualTeam: {},
-            editTeamData: {
-                name: '',
-                location: '',
-                description: '',
-                welcomeMessage: ''
-            }
+            actualTeam: {}
         };
 
         this.handleInitialDataResponse = this.handleInitialDataResponse.bind(this);
         this.handleTeamEditResponse = this.handleTeamEditResponse.bind(this);
-        this.updateTeam = this.updateTeam.bind(this);
         this.handleEdit = this.handleEdit.bind(this);
         this.content = this.content.bind(this);
         this.team = this.team.bind(this);
@@ -46,28 +39,22 @@ export class Team extends React.Component {
     handleTeamEditResponse(response) {
         if (response.hasError()) {
             console.log(response);
-        } else {
-            this.updateTeam(response.team());
         }
-    }
 
-    updateTeam(team) {
-        let otherTeams = this.state.teams.filter(team => team['id'].toString() !== this.state.teamId);
-        otherTeams.push(team);
-        this.setState({teams: otherTeams, actualTeam: team, saving: false});
+        this.setState({saving: false});
     }
 
     handleEdit(event) {
         this.setState({saving: true});
         event.preventDefault();
-        app.apiClient().editTeam(this.state.teamId, this.state.editTeamData, this.handleTeamEditResponse);
+        app.apiClient().editTeam(this.state.teamId, this.state.actualTeam, this.handleTeamEditResponse);
     }
 
     handleInputChange(inputName) {
-        let editTeamData = this.state.editTeamData;
+        let actualTeam = this.state.actualTeam;
         return (event) => {
-            editTeamData[inputName] = event.target.value;
-            this.setState({editTeamData: editTeamData});
+            actualTeam[inputName] = event.target.value;
+            this.setState({actualTeam: actualTeam});
         }
     }
 
@@ -94,8 +81,8 @@ export class Team extends React.Component {
                 <Card title="Editar equipo">
                     <form onSubmit={this.handleEdit}>
                         <Row>
-                            <TextInput s={12} m={6} type="text" label="Nombre"
-                                       defaultValue={this.state.actualTeam['team_name']}
+                            <TextInput s={12} m={6} label="Nombre"
+                                       defaultValue={this.state.actualTeam['team_name'].toString()}
                                        onChange={this.handleInputChange('name')}
                                        validate required/>
                             <TextInput s={12} m={6} type="text" label="País"

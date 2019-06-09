@@ -1,7 +1,7 @@
 import React from 'react';
-import {Layout} from "../components/layout/Layout";
+import Layout from "../components/layout/Layout";
 import {CollectionItem, Row, Collection} from "react-materialize";
-import {app} from '../utils/appConfig';
+import {app} from '../app/app';
 
 export class ForbiddenWords extends React.Component {
     constructor(props) {

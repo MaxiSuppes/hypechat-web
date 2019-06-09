@@ -1,6 +1,6 @@
 import React from "react";
 import {Button, Card, Row, TextInput, Textarea, Preloader} from "react-materialize";
-import {app} from 'utils/appConfig';
+import {app} from 'app/app';
 
 export class NewTeam extends React.Component {
     constructor(props) {

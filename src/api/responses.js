@@ -56,6 +56,12 @@ export class LoginUserResponse extends Response {
     }
 }
 
+export class LogOutUserResponse extends Response {
+    hasError() {
+        return this.status() !== 'LOGGED_OUT';
+    }
+}
+
 export class GetTeamsResponse extends Response {
     hasError() {
         return this.status() === 'WRONG_CREDENTIALS';
@@ -94,5 +100,21 @@ export class GetUsersResponse extends Response {
 
     users() {
         return this._result['users'];
+    }
+}
+
+export class GetUserResponse extends Response {
+    hasError() {
+        return this.status() !== 'ACTIVE';
+    }
+
+    user() {
+        return this._result['user'];
+    }
+}
+
+export class DeleteUserResponse extends Response {
+    hasError() {
+        return this.status() !== 'REMOVED';
     }
 }

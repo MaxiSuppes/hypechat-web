@@ -1,6 +1,6 @@
-import {getSetting} from '../settings/settings.js';
-import {RemoteApi, FakeApi} from "../api/api.js";
-import {ApiClient} from "../api/apiClient.js";
+import {getSetting} from 'settings/settings.js';
+import {RemoteApi, FakeApi} from "api/api.js";
+import {ApiClient} from "api/apiClient.js";
 
 export class AppConfig {
     constructor() {
@@ -29,6 +29,10 @@ export class AppConfig {
         }
 
         return this.client;
+    }
+
+    thereIsLoggedInUser() {
+        return typeof sessionStorage.getItem("X-Auth-Token") === 'string';
     }
 }
 

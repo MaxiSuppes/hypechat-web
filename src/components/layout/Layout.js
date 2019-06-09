@@ -1,14 +1,26 @@
 import React from "react";
-import {SideNav, SideNavItem, NavItem, Navbar, Icon, Preloader} from "react-materialize";
+import {Icon, Navbar, NavItem, Preloader, SideNav, SideNavItem} from "react-materialize";
 import "../../static/styles/layout.css";
 import noImage from "../../static/images/no-image.png"
 import defaultUserImage from "../../static/images/default-user.png"
 import {ToastContainer} from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import {app} from "../../app/app";
+import {withRouter} from "react-router-dom";
 
-export class Layout extends React.Component {
+class Layout extends React.Component {
+    constructor(props) {
+        super(props);
+
+        this.handleLogOut = this.handleLogOut.bind(this);
+    }
+
     userName() {
         return sessionStorage.getItem("userName");
+    }
+
+    handleLogOut() {
+        app.apiClient().logOutUser(() => this.props.history.push("/"));
     }
 
     renderContent() {
@@ -27,31 +39,51 @@ export class Layout extends React.Component {
         return (
             <div>
                 <ToastContainer/>
-                <Navbar className="nav-bar" left>
-                    <SideNav
-                        className="side-nav"
-                        trigger={
-                            <NavItem>
-                                <Icon className="side-nav-menu">
-                                    menu
-                                </Icon>
-                            </NavItem>
+                <Navbar className="nav-bar"
+                        brand={
+                            <a className="brand-logo" href={/teams/}>
+                                Hypechat
+                            </a>
                         }
-                        options={{ closeOnClick: true }}>
-                        <SideNavItem userView
-                                     user={{
-                                         background: noImage,
-                                         image: defaultUserImage,
-                                         name: this.userName(),
-                                     }}/>
-                        <SideNavItem href={this.props.teamId + '/users'}>
-                            Usuarios
-                        </SideNavItem>
-                        <SideNavItem divider/>
-                        <SideNavItem href='/teams'>
-                            Cambiar de equipo
-                        </SideNavItem>
-                    </SideNav>
+                        alignLinks="right">
+                    <NavItem className="close-session" onClick={this.handleLogOut}>
+                        <Icon className="close-session-icon" left>
+                            input
+                        </Icon>
+                        Cerrar Sesión
+                    </NavItem>
+                    <NavItem>
+                        <SideNav
+                            className="side-nav"
+                            trigger={
+                                <NavItem>
+                                    <Icon className="side-nav-menu">
+                                        menu
+                                    </Icon>
+                                </NavItem>
+                            }
+                            options={{ closeOnClick: true }}>
+                            <SideNavItem userView
+                                         user={{
+                                             background: noImage,
+                                             image: defaultUserImage,
+                                             name: this.userName(),
+                                         }}/>
+                            <SideNavItem href={/teams/ + this.props.teamId + /users/}>
+                                Usuarios
+                            </SideNavItem>
+                            <SideNavItem href={/teams/ + this.props.teamId + /channels/}>
+                                Canales
+                            </SideNavItem>
+                            <SideNavItem href={/teams/ + this.props.teamId + /words/}>
+                                Palabras prohibidas
+                            </SideNavItem>
+                            <SideNavItem divider/>
+                            <SideNavItem href='/teams'>
+                                Cambiar de equipo
+                            </SideNavItem>
+                        </SideNav>
+                    </NavItem>
                 </Navbar>
                 <main>
                     {this.renderContent()}
@@ -60,3 +92,5 @@ export class Layout extends React.Component {
         )
     }
 }
+
+export default withRouter(Layout);

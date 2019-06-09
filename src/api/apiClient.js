@@ -1,9 +1,12 @@
 import {
     CreateTeamResponse,
+    DeleteUserResponse,
     EditTeamResponse,
     GetTeamsResponse,
+    GetUserResponse,
     GetUsersResponse,
     LoginUserResponse,
+    LogOutUserResponse,
     SignUpUserResponse
 } from "./responses";
 
@@ -13,6 +16,7 @@ export class ApiClient {
     }
 
     signUpUser(newUserData, onResponse = undefined) {
+        newUserData['role'] = "ADMIN";
         return this.api.signUpUser(newUserData).then(result => {
             let response;
             if (result.status === 400) {
@@ -32,6 +36,22 @@ export class ApiClient {
                 response = result;
             } else {
                 response = new LoginUserResponse(result);
+            }
+
+            if (onResponse) onResponse(response);
+        });
+    }
+
+    logOutUser(onResponse = undefined) {
+        return this.api.logOutUser().then(result => {
+            console.log("result", result);
+            let response;
+            if (result.status !== "LOGGED_OUT") {
+                response = result;
+            } else {
+                sessionStorage.removeItem("X-Auth-Token");
+                sessionStorage.removeItem("userName");
+                response = new LogOutUserResponse(result);
             }
 
             if (onResponse) onResponse(response);
@@ -94,6 +114,20 @@ export class ApiClient {
 
         return this.api.inviteUser(teamId, requestData).then(result => {
             let response = new GetUsersResponse(result);
+            if (onResponse) onResponse(response);
+        });
+    }
+
+    getUser(teamId, userId, onResponse) {
+        return this.api.getUser(teamId, userId).then(result => {
+            let response = new GetUserResponse(result);
+            if (onResponse) onResponse(response);
+        });
+    }
+
+    deleteUser(teamId, userId, onResponse) {
+        return this.api.deleteUser(teamId, userId).then(result => {
+            let response = new DeleteUserResponse(result);
             if (onResponse) onResponse(response);
         });
     }

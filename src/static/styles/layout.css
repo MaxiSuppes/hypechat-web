@@ -7,6 +7,25 @@ body {
     height: 60px;
 }
 
+.brand-logo {
+    font-size: 40px !important;
+    color: black !important;
+    font-weight: 600;
+    margin-left: 50px;
+}
+
+.close-session {
+    color: black;
+}
+
+.close-session-icon {
+    -webkit-transform: rotate(180deg);
+    -moz-transform: rotate(180deg);
+    -ms-transform: rotate(180deg);
+    -o-transform: rotate(180deg);
+    transform: rotate(180deg);
+}
+
 .side-nav-menu {
     color: #363e44;
 }
