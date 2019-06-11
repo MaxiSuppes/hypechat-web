@@ -1,7 +1,9 @@
 import {
-    CreateTeamResponse,
-    DeleteUserResponse,
+    CreateChannelResponse,
+    CreateTeamResponse, DeleteChannelResponse,
+    DeleteUserResponse, EditChannelResponse,
     EditTeamResponse,
+    GetChannelsResponse,
     GetTeamsResponse,
     GetUserResponse,
     GetUsersResponse,
@@ -15,57 +17,47 @@ export class ApiClient {
         this.api = api;
     }
 
-    signUpUser(newUserData, onResponse = undefined) {
+    buildResponse({result, successResponseClass, errorStatus = 400}) {
+        let response;
+        if (result.status === errorStatus) {
+            response = result;
+        } else {
+            response = new successResponseClass(result);
+        }
+
+        return response;
+    }
+
+    signUpUser(newUserData, onResponse) {
         newUserData['role'] = "ADMIN";
         return this.api.signUpUser(newUserData).then(result => {
-            let response;
-            if (result.status === 400) {
-                response = result;
-            } else {
-                response = new SignUpUserResponse(result);
-            }
-
-            if (onResponse) onResponse(response);
+            const response = this.buildResponse({result: result, successResponseClass: SignUpUserResponse});
+            onResponse(response);
         });
     }
 
-    loginUser(loginData, onResponse = undefined) {
+    loginUser(loginData, onResponse) {
         return this.api.loginUser(loginData).then(result => {
-            let response;
-            if (result.status === 404) {
-                response = result;
-            } else {
-                response = new LoginUserResponse(result);
-            }
-
-            if (onResponse) onResponse(response);
+            const response = this.buildResponse({result: result, successResponseClass: LoginUserResponse});
+            onResponse(response);
         });
     }
 
-    logOutUser(onResponse = undefined) {
+    logOutUser(onResponse) {
         return this.api.logOutUser().then(result => {
-            console.log("result", result);
-            let response;
-            if (result.status !== "LOGGED_OUT") {
-                response = result;
-            } else {
-                sessionStorage.removeItem("X-Auth-Token");
-                sessionStorage.removeItem("userName");
-                response = new LogOutUserResponse(result);
-            }
-
-            if (onResponse) onResponse(response);
+            const response = this.buildResponse({result: result, successResponseClass: LoginUserResponse, errorStatus: "LOGGED_OUT"});
+            onResponse(response);
         });
     }
 
-    getTeams(onResponse = undefined) {
+    getTeams(onResponse) {
         return this.api.getTeams().then(result => {
-            let response = new GetTeamsResponse(result);
-            if (onResponse) onResponse(response);
+            const response = this.buildResponse({result: result, successResponseClass: GetTeamsResponse});
+            onResponse(response);
         });
     }
 
-    createTeam(newTeamData, onResponse = undefined) {
+    createTeam(newTeamData, onResponse) {
         const requestData = {
             "team_name": newTeamData['name'],
             "location": newTeamData['location'],
@@ -74,12 +66,12 @@ export class ApiClient {
         };
 
         return this.api.createTeam(requestData).then(result => {
-            let response = new CreateTeamResponse(result);
-            if (onResponse) onResponse(response);
+            const response = this.buildResponse({result: result, successResponseClass: CreateTeamResponse});
+            onResponse(response);
         });
     }
 
-    editTeam(teamId, teamData, onResponse = undefined) {
+    editTeam(teamId, teamData, onResponse) {
         const mapFields = {
             'name': "team_name",
             'location': "location",
@@ -95,40 +87,88 @@ export class ApiClient {
         });
 
         return this.api.editTeam(teamId, requestData).then(result => {
-            let response = new EditTeamResponse(result);
-            if (onResponse) onResponse(response);
+            const response = this.buildResponse({result: result, successResponseClass: EditTeamResponse});
+            onResponse(response);
         });
     }
 
-    getUsers(teamId, onResponse = undefined) {
+    getUsers(teamId, onResponse) {
         return this.api.getUsers(teamId).then(result => {
-            let response = new GetUsersResponse(result);
-            if (onResponse) onResponse(response);
+            const response = this.buildResponse({result: result, successResponseClass: GetUsersResponse});
+            onResponse(response);
         });
     }
 
-    inviteUser(teamId, email, onResponse = undefined) {
+    inviteUser(teamId, email, onResponse) {
         const requestData = {
             "email": email,
         };
 
         return this.api.inviteUser(teamId, requestData).then(result => {
-            let response = new GetUsersResponse(result);
-            if (onResponse) onResponse(response);
+            const response = this.buildResponse({result: result, successResponseClass: GetUsersResponse});
+            onResponse(response);
         });
     }
 
     getUser(teamId, userId, onResponse) {
         return this.api.getUser(teamId, userId).then(result => {
-            let response = new GetUserResponse(result);
-            if (onResponse) onResponse(response);
+            const response = this.buildResponse({result: result, successResponseClass: GetUserResponse});
+            onResponse(response);
         });
     }
 
     deleteUser(teamId, userId, onResponse) {
         return this.api.deleteUser(teamId, userId).then(result => {
-            let response = new DeleteUserResponse(result);
-            if (onResponse) onResponse(response);
+            const response = this.buildResponse({result: result, successResponseClass: DeleteUserResponse});
+            onResponse(response);
+        });
+    }
+
+    getChannels(teamId, onResponse) {
+        return this.api.getChannels(teamId).then(result => {
+            console.log("result", result);
+            const response = this.buildResponse({result: result, successResponseClass: GetChannelsResponse});
+            onResponse(response);
+        });
+    }
+
+    createChannel(teamId, newChannelData, onResponse) {
+        console.log("newChannelData", newChannelData);
+        newChannelData['team_id'] = teamId;
+
+        return this.api.createChannel(newChannelData).then(result => {
+            console.log("result", result);
+            const response = this.buildResponse({result: result, successResponseClass: CreateChannelResponse});
+            onResponse(response);
+        });
+    }
+
+    editChannel(teamId, channelId, channelData, onResponse) {
+        const mapFields = {
+            'name': "name",
+            'visibility': "visibility",
+            "description": 'description',
+            "welcomeMessage": 'welcome_message'
+        };
+
+        let requestData = {};
+        Object.keys(channelData).forEach(fieldName => {
+            if (channelData[fieldName] !== '' && channelData[fieldName] !== undefined) {
+                requestData[mapFields[fieldName]] = channelData[fieldName];
+            }
+        });
+
+        return this.api.editChannel(teamId, channelId, requestData).then(result => {
+            const response = this.buildResponse({result: result, successResponseClass: EditChannelResponse});
+            onResponse(response);
+        });
+    }
+
+    deleteChannel(teamId, channelId, onResponse) {
+        return this.api.deleteChannel(teamId, channelId).then(result => {
+            console.log("result", result);
+            const response = this.buildResponse({result: result, successResponseClass: DeleteChannelResponse});
+            onResponse(response);
         });
     }
 }

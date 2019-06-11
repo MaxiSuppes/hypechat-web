@@ -1,55 +1,211 @@
 import React from 'react';
 import Layout from "../components/layout/Layout";
-import {CollectionItem, Row, Collection} from "react-materialize";
+import {CollectionItem, Row, Col, Collection, Icon, TextInput, Preloader, Button, Modal, Checkbox} from "react-materialize";
 import {app} from '../app/app';
+import "../static/styles/users.css";
+import defaultUserImage from '../static/images/default-user.png';
+import {toast} from 'react-toastify';
 
 export class Channels extends React.Component {
     constructor(props) {
         super(props);
 
+        this._modal = React.createRef();
+
         this.state = {
             loading: true,
-            channels: []
+            saving: false,
+            deleting: false,
+            teamId: props.match.params.teamId,
+            channels: [],
+            newChannelData: {
+                name: '',
+                visibility: 'PUBLIC'
+            }
         };
 
-        this.handleApiResponse = this.handleApiResponse.bind(this);
+        this.handleGetChannelsResponse = this.handleGetChannelsResponse.bind(this);
+        this.getChannels = this.getChannels.bind(this);
+        this.handleDeleteChannelApiResponse = this.handleDeleteChannelApiResponse.bind(this);
+        this.handleDeleteChannel = this.handleDeleteChannel.bind(this);
+        this.handleCreateChannelApiResponse = this.handleCreateChannelApiResponse.bind(this);
+        this.handleCreateChannel = this.handleCreateChannel.bind(this);
+        this.handleVisibilityChange = this.handleVisibilityChange.bind(this);
+        this.handleNameChange = this.handleNameChange.bind(this);
+        this.content = this.content.bind(this);
     }
 
-    handleApiResponse(response) {
-        if (response.hasErrors()) {
+    componentDidMount() {
+        this.getChannels();
+    }
+
+    handleGetChannelsResponse(response) {
+        if (response.hasError()) {
             this.setState({channels: []});
         } else {
             this.setState({channels: response.channels(), loading: false});
         }
     }
 
-    componentWillMount() {
-        app.apiClient().getChannels(this.organizationId(), this.handleApiResponse);
+    getChannels() {
+        this.setState({loading: true});
+        app.apiClient().getChannels(this.state.teamId, this.handleGetChannelsResponse);
     }
 
-    organizationId() {
-        return this.props.match.params['organizationId'];
+    handleDeleteChannelApiResponse(response) {
+        if (response.hasError()) {
+            toast("No se pudo eliminar el canal del equipo", {type: toast.TYPE.ERROR});
+        } else {
+            this.setState({deleting: false});
+            this._modal.current.hideModal();
+            toast("Canal eliminado del equipo", {type: toast.TYPE.SUCCESS});
+            this.getChannels();
+        }
+    }
+
+    handleDeleteChannel(channelId) {
+        this.setState({deleting: true});
+        app.apiClient().deleteChannel(this.state.teamId, channelId, this.handleDeleteChannelApiResponse);
+    }
+
+    handleCreateChannelApiResponse(response) {
+        console.log("response", response);
+        this.setState({saving: false});
+        if (response.hasError()) {
+            toast("No se pudo crear el canal. Vuelva a intentarlo más tarde", {type: toast.TYPE.ERROR});
+        } else {
+            toast("El canal se creó correctamente", {type: toast.TYPE.SUCCESS});
+            this.getChannels();
+        }
+    }
+
+    handleCreateChannel(event) {
+        event.preventDefault();
+        this.setState({saving: true});
+        app.apiClient().createChannel(this.state.teamId, this.state.newChannelData, this.handleCreateChannelApiResponse)
+    }
+
+    handleVisibilityChange(event) {
+        let newChannelData = this.state.newChannelData;
+        if (event.target.checked) {
+            newChannelData['visibility'] = 'PRIVATE';
+        } else {
+            newChannelData['visibility'] = 'PUBLIC';
+        }
+
+        this.setState({newChannelData: newChannelData});
+    }
+
+    handleNameChange(event) {
+        let newChannelData = this.state.newChannelData;
+        newChannelData['name'] = event.target.value;
+
+        this.setState({newChannelData: newChannelData});
+    }
+
+    renderDeleteButton(channel) {
+        if (this.state.deleting) {
+            return <Preloader size="small"/>;
+        } else {
+            return (
+                <Button className="button" onClick={() => this.handleDeleteChannel(channel.id)} small>
+                    Confirmar
+                </Button>
+            );
+        }
+    }
+
+    renderDeleteChannelModal(channel) {
+        return (
+            <Modal
+                ref={this._modal}
+                header="Eliminar canal"
+                trigger={
+                    <a href="javascript:void(0)" className="secondary-content">
+                        <Icon>
+                            delete
+                        </Icon>
+                    </a>}
+                actions={[
+                    <Button className="button" modal="close" style={{"marginRight": "10px"}} small> Cancelar </Button>,
+                    this.renderDeleteButton(channel)]}>
+                <p>
+                    Esto eliminará el canal <b>{channel.name}</b> del equipo.
+                </p>
+            </Modal>
+
+        )
+    }
+
+    renderChannels() {
+        return (
+            <Collection>
+                {this.state.channels.map(channel => {
+                    const teamId = this.state.teamId;
+                    return (
+                        <CollectionItem key={channel.id} className="avatar" href={/teams/ + teamId + /channels/ + channel.id}>
+                            <img src={defaultUserImage} alt="" className="circle"/>
+                            <span className="title">
+                                {channel.name}
+                            </span>
+                            {this.renderDeleteChannelModal(channel)}
+                        </CollectionItem>
+                    )
+                })}
+            </Collection>
+        )
+    }
+
+    renderNoChannelsMessage() {
+        if (this.state.channels.length === 0) {
+            return (
+                <div className="center-align">
+                    <Icon large>
+                        info
+                    </Icon>
+                    <p>Aún no hay canales creados en el equipo.</p>
+                </div>
+            )
+        }
+    }
+
+    renderCreateChannelButton() {
+        if (this.state.saving) {
+            return <Preloader size="small"/>;
+        } else {
+            return (
+                <Button className="button" type="submit" small>
+                    Crear canal
+                </Button>
+            )
+        }
     }
 
     content() {
         return (
-            <Row style={{maxWidth: "700px"}}>
-                <Collection>
-                    {this.state.channels.map(channel => {
-                        return (
-                            <CollectionItem>
-                                <span className="title">
-                                    {channel}
-                                </span>
-                            </CollectionItem>
-                        )
-                    })}
-                </Collection>
-            </Row>
+            <div className="invite-container">
+                <Row>
+                    {this.renderChannels()}
+                    {this.renderNoChannelsMessage()}
+                </Row>
+                <Row className="invite-form">
+                    <form onSubmit={this.handleCreateChannel}>
+                        <Col s={5}>
+                            <TextInput label="Nombre" onChange={this.handleNameChange} validate required/>
+                        </Col>
+                        <Col s={3} style={{"padding-top": "40px"}}>
+                            <Checkbox value="PRIVATE" label="Privado" onChange={this.handleVisibilityChange}/>
+                        </Col>
+                        <Col s={4} className="invite-button">
+                            {this.renderCreateChannelButton()}
+                        </Col>
+                    </form>
+                </Row>
+            </div>
         )
     }
 
     render() {
-        return <Layout organizationId={this.organizationId()} content={this.content()} loading={this.state.loading}/>;
+        return <Layout teamId={this.state.teamId} content={this.content} loading={this.state.loading}/>;
     }
 }

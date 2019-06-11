@@ -12,6 +12,7 @@ class Layout extends React.Component {
     constructor(props) {
         super(props);
 
+        this.handleLogoutResponse = this.handleLogoutResponse.bind(this);
         this.handleLogOut = this.handleLogOut.bind(this);
     }
 
@@ -19,8 +20,18 @@ class Layout extends React.Component {
         return sessionStorage.getItem("userName");
     }
 
+    handleLogoutResponse(response) {
+        if (response.hasError()) {
+            console.log("No se pudo desloguear");
+        } else {
+            sessionStorage.removeItem("X-Auth-Token");
+            sessionStorage.removeItem("userName");
+            this.props.history.push("/")
+        }
+    }
+
     handleLogOut() {
-        app.apiClient().logOutUser(() => this.props.history.push("/"));
+        app.apiClient().logOutUser(this.handleLogoutResponse);
     }
 
     renderContent() {

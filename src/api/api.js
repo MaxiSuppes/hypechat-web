@@ -41,6 +41,22 @@ export class Api {
     deleteUser(teamId, userId) {
         throw new Error("You have to implement the method");
     }
+
+    getChannels(teamId) {
+        throw new Error("You have to implement the method");
+    }
+
+    createChannel(newChannelData) {
+        throw new Error("You have to implement the method");
+    }
+
+    editChannel(teamId, channelId, channelData) {
+        throw new Error("You have to implement the method");
+    }
+
+    deleteChannel(teamId, channelId) {
+        throw new Error("You have to implement the method");
+    }
 }
 
 
@@ -90,6 +106,25 @@ export class RemoteApi extends Api {
         return this.call({resourceUrl: '/teams/' + teamId + '/users/' + userId, method: 'DELETE', withAuthorization: true});
     }
 
+    getChannels(teamId) {
+        return this.call({resourceUrl: '/teams/' + teamId + '/channels', withAuthorization: true});
+    }
+
+    createChannel(newChannelData) {
+        return this.call({resourceUrl: '/teams/channels', method: 'POST', body: newChannelData, withAuthorization: true});
+    }
+
+    editChannel(teamId, channelId, channelData) {
+        return this.call({
+            resourceUrl: '/teams/' + teamId + '/channels/' + channelId,
+            method: 'PATCH',
+            body: channelData,
+            withAuthorization: true});
+    }
+
+    deleteChannel(teamId, channelId) {
+        return this.call({resourceUrl: '/teams/' + teamId + '/channels/' + channelId, method: 'DELETE', withAuthorization: true});
+    }
 
     private
     handleHeaders(response, headersToHandle) {
@@ -222,7 +257,7 @@ export class FakeApi extends Api {
         });
     }
 
-    getUsers(organizationId) {
+    getUsers(teamId) {
         let self = this;
         return new Promise(function (resolve, reject) {
             setTimeout(function(){
@@ -231,7 +266,7 @@ export class FakeApi extends Api {
         });
     }
 
-    getChannels(organizationId) {
+    getChannels(teamId) {
         let self = this;
         return new Promise(function (resolve, reject) {
             setTimeout(function(){
@@ -240,7 +275,7 @@ export class FakeApi extends Api {
         });
     }
 
-    getForbiddenWords(organizationId) {
+    getForbiddenWords(teamId) {
         let self = this;
         return new Promise(function (resolve, reject) {
             setTimeout(function(){

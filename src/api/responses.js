@@ -118,3 +118,39 @@ export class DeleteUserResponse extends Response {
         return this.status() !== 'REMOVED';
     }
 }
+
+export class GetChannelsResponse extends Response {
+    hasError() {
+        return this.status() !== 'LIST';
+    }
+
+    channels() {
+        return this._result['channels'];
+    }
+}
+
+export class CreateChannelResponse extends Response {
+    hasError() {
+        return this.status() !== 'CREATED';
+    }
+
+    channel() {
+        return this._result['team'];
+    }
+}
+
+export class EditChannelResponse extends Response {
+    hasError() {
+        return this.status() !== 'UPDATED';
+    }
+
+    channel() {
+        return this.result()['team'];
+    }
+}
+
+export class DeleteChannelResponse extends Response {
+    hasError() {
+        return this.status() !== 'REMOVED';
+    }
+}
