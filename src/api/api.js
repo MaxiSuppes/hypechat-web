@@ -57,6 +57,10 @@ export class Api {
     deleteChannel(teamId, channelId) {
         throw new Error("You have to implement the method");
     }
+
+    getChannelUsers(teamId, channelId) {
+        throw new Error("You have to implement the method");
+    }
 }
 
 
@@ -126,6 +130,10 @@ export class RemoteApi extends Api {
         return this.call({resourceUrl: '/teams/' + teamId + '/channels/' + channelId, method: 'DELETE', withAuthorization: true});
     }
 
+    getChannelUsers(teamId, channelId) {
+        return this.call({resourceUrl: '/teams/' + teamId + '/channels/' + channelId + '/users', withAuthorization: true});
+    }
+
     private
     handleHeaders(response, headersToHandle) {
         headersToHandle.forEach(headerName => {
@@ -153,11 +161,11 @@ export class RemoteApi extends Api {
         return fetch(this.url + resourceUrl, requestOptions).then((response) => {
             if (headersToHandle.length > 0) this.handleHeaders(response, headersToHandle);
 
-            if (response.status === 200) {
-                return response.json();
+            if (response.status !== 200) {
+                return new ErrorResponse(response);
             }
 
-            return new ErrorResponse(response);
+            return response.json();
         });
     }
 

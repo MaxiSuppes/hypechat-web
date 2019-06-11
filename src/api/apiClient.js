@@ -126,18 +126,15 @@ export class ApiClient {
 
     getChannels(teamId, onResponse) {
         return this.api.getChannels(teamId).then(result => {
-            console.log("result", result);
             const response = this.buildResponse({result: result, successResponseClass: GetChannelsResponse});
             onResponse(response);
         });
     }
 
     createChannel(teamId, newChannelData, onResponse) {
-        console.log("newChannelData", newChannelData);
         newChannelData['team_id'] = teamId;
 
         return this.api.createChannel(newChannelData).then(result => {
-            console.log("result", result);
             const response = this.buildResponse({result: result, successResponseClass: CreateChannelResponse});
             onResponse(response);
         });
@@ -166,7 +163,25 @@ export class ApiClient {
 
     deleteChannel(teamId, channelId, onResponse) {
         return this.api.deleteChannel(teamId, channelId).then(result => {
-            console.log("result", result);
+            const response = this.buildResponse({result: result, successResponseClass: DeleteChannelResponse});
+            onResponse(response);
+        });
+    }
+
+    getChannelInitialData(teamId, channelId, onResponse) {
+        const getChannelsRequest = this.api.getChannels(teamId);
+        const getChannelUsersRequest = this.api.getChannelUsers(teamId, channelId);
+
+        let data = {};
+        Promise.all([getChannelsRequest, getChannelUsersRequest]).then(function(results){
+            data["channels"] = new GetChannelsResponse(results[0]);
+            data["users"] = new GetUsersResponse(results[1]);
+            onResponse(data);
+        });
+    }
+
+    deleteUserFromChannel(teamId, channelId, userId, onResponse) {
+        return this.api.deleteUserFromChannel(teamId, channelId, userId).then(result => {
             const response = this.buildResponse({result: result, successResponseClass: DeleteChannelResponse});
             onResponse(response);
         });

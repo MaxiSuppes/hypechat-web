@@ -48,7 +48,7 @@ export class SignUpUserResponse extends Response {
 
 export class LoginUserResponse extends Response {
     hasError() {
-        return this.status() === 'WRONG_CREDENTIALS';
+        return this.status() !== 'ACTIVE';
     }
 
     user() {
@@ -95,7 +95,7 @@ export class EditTeamResponse extends Response {
 
 export class GetUsersResponse extends Response {
     hasError() {
-        return this.status() === 'WRONG_CREDENTIALS';
+        return this.status() !== 'LIST';
     }
 
     users() {
