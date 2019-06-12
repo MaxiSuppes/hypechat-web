@@ -61,6 +61,10 @@ export class Api {
     getChannelUsers(teamId, channelId) {
         throw new Error("You have to implement the method");
     }
+
+    deleteUserFromChannel(teamId, channelId, userId) {
+        throw new Error("You have to implement the method");
+    }
 }
 
 
@@ -132,6 +136,13 @@ export class RemoteApi extends Api {
 
     getChannelUsers(teamId, channelId) {
         return this.call({resourceUrl: '/teams/' + teamId + '/channels/' + channelId + '/users', withAuthorization: true});
+    }
+
+    deleteUserFromChannel(teamId, channelId, userId) {
+        return this.call({
+            resourceUrl: '/teams/' + teamId + '/channels/' + channelId + '/users/' + userId,
+            method: 'DELETE',
+            withAuthorization: true});
     }
 
     private

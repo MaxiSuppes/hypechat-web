@@ -1,8 +1,24 @@
 import React from "react";
-import Layout from "../components/layout/Layout";
-import {app} from '../app/app';
-import {Button, Card, Checkbox, Preloader, Row, Textarea, TextInput, Col, Table, Modal, Icon, Tabs, Tab} from "react-materialize";
+import Layout from "components/layout/Layout";
+import {app} from 'app/app';
+import {
+    Button,
+    Card,
+    Checkbox,
+    Preloader,
+    Row,
+    Textarea,
+    TextInput,
+    Col,
+    Table,
+    Modal,
+    Icon,
+    Tabs,
+    Tab,
+    Autocomplete
+} from "react-materialize";
 import {toast} from "react-toastify";
+import 'static/styles/channel.css';
 
 export class Channel extends React.Component {
     constructor(props) {
@@ -13,18 +29,23 @@ export class Channel extends React.Component {
         this.state = {
             loading: true,
             saving: false,
+            deleting: false,
             channel: undefined,
             users: [],
+            teamUsers: [],
             teamId: props.match.params.teamId,
             channelId: props.match.params.channelId
         };
 
+        this.getInitialData = this.getInitialData.bind(this);
         this.handleInitialDataResponse = this.handleInitialDataResponse.bind(this);
         this.handleChannelEditResponse = this.handleChannelEditResponse.bind(this);
         this.handleEdit = this.handleEdit.bind(this);
         this.handleVisibilityChange = this.handleVisibilityChange.bind(this);
         this.handleInputChange = this.handleInputChange.bind(this);
+        this.handleDeleteUserFromChannelApiResponse = this.handleDeleteUserFromChannelApiResponse.bind(this);
         this.handleDeleteUserFromChannel = this.handleDeleteUserFromChannel.bind(this);
+        this.handleAddUser = this.handleAddUser.bind(this);
         this.channel = this.channel.bind(this);
         this.content = this.content.bind(this);
     }
@@ -34,10 +55,10 @@ export class Channel extends React.Component {
     }
 
     handleInitialDataResponse(response) {
-        console.log("response", response);
         const channelsResponse = response['channels'];
         const usersResponse = response['users'];
-        if (channelsResponse.hasError() || usersResponse.hasError()) {
+        const teamUsersResponse = response['teamUsers'];
+        if (channelsResponse.hasError() || usersResponse.hasError() || teamUsersResponse.hasError()) {
             toast("Hubo un error al obtener los datos del canal. Vuelva a intentarlo más tarde",
                 {type: toast.TYPE.ERROR});
             this.props.history.push(/teams/ + this.state.teamId + /channels/);
@@ -45,13 +66,18 @@ export class Channel extends React.Component {
             this.setState({
                 channel: this.channel(channelsResponse.channels()),
                 users: usersResponse.users(),
+                teamUsers: teamUsersResponse.users(),
                 loading: false
             });
         }
     }
 
-    componentDidMount() {
+    getInitialData() {
         app.apiClient().getChannelInitialData(this.state.teamId, this.state.channelId, this.handleInitialDataResponse);
+    }
+
+    componentDidMount() {
+        this.getInitialData();
     }
 
     handleChannelEditResponse(response) {
@@ -91,14 +117,54 @@ export class Channel extends React.Component {
         }
     }
 
-    handleDeleteUserFromChannel(userId) {
-        this._modal.current.hideModal();
-        console.log("user", userId);
+    handleDeleteUserFromChannelApiResponse(response) {
+        if (response.hasError()) {
+            toast("No se pudo eliminar al usuario del canal", {type: toast.TYPE.ERROR});
+        } else {
+            this.setState({deleting: false});
+            this._modal.current.hideModal();
+            toast("Usuario eliminado del equipo", {type: toast.TYPE.SUCCESS});
+            this.getInitialData();
+        }
     }
 
-    showSaveButton() {
+    handleDeleteUserFromChannel(userId) {
+        this.setState({deleting: true});
+        app.apiClient().deleteUserFromChannel(
+            this.state.teamId, this.state.channelId, userId,
+            this.handleDeleteUserFromChannelApiResponse
+        );
+    }
+
+    handleAddUser() {
+        console.log("Agregandooo");
+    }
+
+    dataForAutocomplete() {
+        let data = {};
+        this.state.teamUsers.forEach(user => {
+            data[user.username] = user["profile_pic"]
+        });
+        console.log("data", data);
+
+        return data;
+    }
+
+    renderInviteButton() {
+        if (this.state.sending) {
+            return <Preloader size="small"/>;
+        } else {
+            return (
+                <Button className="button" type="submit" small>
+                    Invitar
+                </Button>
+            )
+        }
+    }
+
+    renderSaveButton() {
         if (this.state.saving) {
-            return <Preloader size="big" />
+            return <Preloader size="big"/>
         } else {
             return (
                 <Button m={6} s={12} className="button" type="submit" large>
@@ -154,7 +220,7 @@ export class Channel extends React.Component {
                                                defaultValue={this.state.channel['name'].toString()}
                                                onChange={this.handleInputChange('name')}
                                                validate required/>
-                                    <Col s={12} m={6} style={{"margin-top": "40px"}} >
+                                    <Col s={12} m={6} style={{"margin-top": "40px"}}>
                                         <Checkbox value="PRIVATE" label="Privado"
                                                   checked={this.state.channel['visibility'] === 'PRIVATE'}
                                                   onChange={this.handleVisibilityChange}/>
@@ -173,7 +239,7 @@ export class Channel extends React.Component {
                                               validate/>
                                 </Row>
                                 <Row className="center-align">
-                                    {this.showSaveButton()}
+                                    {this.renderSaveButton()}
                                 </Row>
                             </form>
                         </Card>
@@ -212,6 +278,21 @@ export class Channel extends React.Component {
                                 })}
                                 </tbody>
                             </Table>
+                            <Row className="invite-user-form">
+                                <form onSubmit={this.handleAddUser}>
+                                    <Col s={8}>
+                                        <Autocomplete placeholder="Nombre de usuario"
+                                                      options={{
+                                                          data: this.dataForAutocomplete()
+                                                      }}
+                                                      onAutocomplete={(username) => this.setState({userToAdd: username})}
+                                                      validate required/>
+                                    </Col>
+                                    <Col s={4} className="invite-button">
+                                        {this.renderInviteButton()}
+                                    </Col>
+                                </form>
+                            </Row>
                         </Card>
                     </Tab>
                 </Tabs>

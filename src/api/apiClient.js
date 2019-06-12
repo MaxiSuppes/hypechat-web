@@ -1,6 +1,6 @@
 import {
     CreateChannelResponse,
-    CreateTeamResponse, DeleteChannelResponse,
+    CreateTeamResponse, DeleteChannelResponse, DeleteUserFromChannelResponse,
     DeleteUserResponse, EditChannelResponse,
     EditTeamResponse,
     GetChannelsResponse,
@@ -45,7 +45,7 @@ export class ApiClient {
 
     logOutUser(onResponse) {
         return this.api.logOutUser().then(result => {
-            const response = this.buildResponse({result: result, successResponseClass: LoginUserResponse, errorStatus: "LOGGED_OUT"});
+            const response = this.buildResponse({result: result, successResponseClass: LogOutUserResponse, errorStatus: "LOGGED_OUT"});
             onResponse(response);
         });
     }
@@ -171,18 +171,20 @@ export class ApiClient {
     getChannelInitialData(teamId, channelId, onResponse) {
         const getChannelsRequest = this.api.getChannels(teamId);
         const getChannelUsersRequest = this.api.getChannelUsers(teamId, channelId);
+        const getTeamUsersRequest = this.api.getUsers(teamId);
 
         let data = {};
-        Promise.all([getChannelsRequest, getChannelUsersRequest]).then(function(results){
+        Promise.all([getChannelsRequest, getChannelUsersRequest, getTeamUsersRequest]).then(function(results){
             data["channels"] = new GetChannelsResponse(results[0]);
             data["users"] = new GetUsersResponse(results[1]);
+            data["teamUsers"] = new GetUsersResponse(results[2]);
             onResponse(data);
         });
     }
 
     deleteUserFromChannel(teamId, channelId, userId, onResponse) {
         return this.api.deleteUserFromChannel(teamId, channelId, userId).then(result => {
-            const response = this.buildResponse({result: result, successResponseClass: DeleteChannelResponse});
+            const response = this.buildResponse({result: result, successResponseClass: DeleteUserFromChannelResponse});
             onResponse(response);
         });
     }

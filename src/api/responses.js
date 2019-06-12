@@ -154,3 +154,9 @@ export class DeleteChannelResponse extends Response {
         return this.status() !== 'REMOVED';
     }
 }
+
+export class DeleteUserFromChannelResponse extends Response {
+    hasError() {
+        return this.status() !== 'REMOVED';
+    }
+}

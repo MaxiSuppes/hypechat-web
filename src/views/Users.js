@@ -117,8 +117,9 @@ export class Users extends React.Component {
                 <Row>
                     <Collection>
                         {this.state.users.map(user => {
+                            const teamId = this.state.teamId;
                             return (
-                                <CollectionItem key={user.id} className="avatar" href={`users/${user.id}`}>
+                                <CollectionItem key={user.id} className="avatar" href={/teams/ + teamId + /users/ + user.id}>
                                     <img src={defaultUserImage} alt="" className="circle"/>
                                     <span className="title">
                                         {user.username}
