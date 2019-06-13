@@ -1,4 +1,5 @@
 import {
+    AddUserToChannelResponse,
     CreateChannelResponse,
     CreateTeamResponse, DeleteChannelResponse, DeleteUserFromChannelResponse,
     DeleteUserResponse, EditChannelResponse,
@@ -45,7 +46,7 @@ export class ApiClient {
 
     logOutUser(onResponse) {
         return this.api.logOutUser().then(result => {
-            const response = this.buildResponse({result: result, successResponseClass: LogOutUserResponse, errorStatus: "LOGGED_OUT"});
+            const response = this.buildResponse({result: result, successResponseClass: LogOutUserResponse});
             onResponse(response);
         });
     }
@@ -185,6 +186,19 @@ export class ApiClient {
     deleteUserFromChannel(teamId, channelId, userId, onResponse) {
         return this.api.deleteUserFromChannel(teamId, channelId, userId).then(result => {
             const response = this.buildResponse({result: result, successResponseClass: DeleteUserFromChannelResponse});
+            onResponse(response);
+        });
+    }
+
+    addUserToChannel(teamId, channelId, userId, onResponse) {
+        const requestData = {
+            "team_id": teamId,
+            "user_invited_id": userId,
+            "channel_id": channelId
+        };
+
+        return this.api.addUserToChannel(requestData).then(result => {
+            const response = this.buildResponse({result: result, successResponseClass: AddUserToChannelResponse});
             onResponse(response);
         });
     }

@@ -15,7 +15,7 @@ import {
     Icon,
     Tabs,
     Tab,
-    Autocomplete
+    Select
 } from "react-materialize";
 import {toast} from "react-toastify";
 import 'static/styles/channel.css';
@@ -33,6 +33,8 @@ export class Channel extends React.Component {
             channel: undefined,
             users: [],
             teamUsers: [],
+            userToAdd: 0,
+            errorMessage: '',
             teamId: props.match.params.teamId,
             channelId: props.match.params.channelId
         };
@@ -45,7 +47,9 @@ export class Channel extends React.Component {
         this.handleInputChange = this.handleInputChange.bind(this);
         this.handleDeleteUserFromChannelApiResponse = this.handleDeleteUserFromChannelApiResponse.bind(this);
         this.handleDeleteUserFromChannel = this.handleDeleteUserFromChannel.bind(this);
+        this.handleAddUserResponse = this.handleAddUserResponse.bind(this);
         this.handleAddUser = this.handleAddUser.bind(this);
+        this.handleSelect = this.handleSelect.bind(this);
         this.channel = this.channel.bind(this);
         this.content = this.content.bind(this);
     }
@@ -136,18 +140,32 @@ export class Channel extends React.Component {
         );
     }
 
-    handleAddUser() {
-        console.log("Agregandooo");
+    handleAddUserResponse(response) {
+        if (response.hasError()) {
+            toast("No se pudo agregar al usuario al canal", {type: toast.TYPE.ERROR});
+        } else {
+            this.setState({saving: false});
+            toast("Usuario agregado al canal", {type: toast.TYPE.SUCCESS});
+            this.getInitialData();
+        }
     }
 
-    dataForAutocomplete() {
-        let data = {};
-        this.state.teamUsers.forEach(user => {
-            data[user.username] = user["profile_pic"]
-        });
-        console.log("data", data);
+    handleAddUser(event) {
+        event.preventDefault();
+        if (this.state.userToAdd === 0) {
+            this.setState({errorMessage: "Selecciona un usuario del listado"});
+            return;
+        }
 
-        return data;
+        this.setState({saving: true});
+        app.apiClient().addUserToChannel(
+            this.state.teamId, this.state.channelId, this.state.userToAdd, this.handleAddUserResponse
+        );
+    }
+
+    handleSelect(event) {
+        event.preventDefault();
+        this.setState({userToAdd: event.target.value});
     }
 
     renderInviteButton() {
@@ -281,17 +299,29 @@ export class Channel extends React.Component {
                             <Row className="invite-user-form">
                                 <form onSubmit={this.handleAddUser}>
                                     <Col s={8}>
-                                        <Autocomplete placeholder="Nombre de usuario"
-                                                      options={{
-                                                          data: this.dataForAutocomplete()
-                                                      }}
-                                                      onAutocomplete={(username) => this.setState({userToAdd: username})}
-                                                      validate required/>
+                                        <Select value={this.state.userToAdd}
+                                                onChange={this.handleSelect} label="Seleccionar usuario">
+                                            <option value={0} disabled>
+                                                Nombre de usuario
+                                            </option>
+                                            {this.state.teamUsers.map(user => {
+                                                return (
+                                                    <option value={user.id}>
+                                                        {user.username}
+                                                    </option>
+                                                )
+                                            })}
+                                        </Select>
                                     </Col>
                                     <Col s={4} className="invite-button">
                                         {this.renderInviteButton()}
                                     </Col>
                                 </form>
+                            </Row>
+                            <Row className="center-align">
+                                <p style={{'color': 'red'}}>
+                                    {this.state.errorMessage}
+                                </p>
                             </Row>
                         </Card>
                     </Tab>
