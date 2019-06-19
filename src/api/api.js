@@ -1,5 +1,5 @@
 import {JsonEncoder, MultiPartEncoder} from "./encoders";
-import {ErrorResponse} from "./responses";
+import {DeleteUserResponse, ErrorResponse} from "./responses";
 
 export class Api {
     signUpUser(newUserData) {
@@ -42,6 +42,17 @@ export class Api {
         throw new Error("You have to implement the method");
     }
 
+    getForbiddenWords(teamId) {
+        throw new Error("You have to implement the method");
+    }
+
+    addForbiddenWord(requestData) {
+        throw new Error("You have to implement the method");
+    }
+
+    deleteForbiddenWord(teamId, wordId) {
+        throw new Error("You have to implement the method");
+    }
     getChannels(teamId) {
         throw new Error("You have to implement the method");
     }
@@ -116,6 +127,18 @@ export class RemoteApi extends Api {
 
     deleteUser(teamId, userId) {
         return this.call({resourceUrl: '/teams/' + teamId + '/users/' + userId, method: 'DELETE', withAuthorization: true});
+    }
+
+    getForbiddenWords(teamId) {
+        return this.call({resourceUrl: '/teams/' + teamId + '/forbidden-words', withAuthorization: true});
+    }
+
+    addForbiddenWord(requestData) {
+        return this.call({resourceUrl: '/teams/forbidden-words', method: 'PUT', body: requestData, withAuthorization: true});
+    }
+
+    deleteForbiddenWord(teamId, wordId) {
+        return this.call({resourceUrl: '/teams/' + teamId + '/forbidden-words/' + wordId, method: 'DELETE', withAuthorization: true});;
     }
 
     getChannels(teamId) {

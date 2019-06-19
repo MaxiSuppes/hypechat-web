@@ -24,7 +24,7 @@ export class Channel extends React.Component {
     constructor(props) {
         super(props);
 
-        this._modal = React.createRef();
+        this._modals = {};
 
         this.state = {
             loading: true,
@@ -121,13 +121,13 @@ export class Channel extends React.Component {
         }
     }
 
-    handleDeleteUserFromChannelApiResponse(response) {
+    handleDeleteUserFromChannelApiResponse(response, userId) {
         if (response.hasError()) {
             toast("No se pudo eliminar al usuario del canal", {type: toast.TYPE.ERROR});
         } else {
             this.setState({deleting: false});
-            this._modal.current.hideModal();
-            toast("Usuario eliminado del equipo", {type: toast.TYPE.SUCCESS});
+            this._modals[userId].hideModal();
+            toast("Usuario eliminado del canal", {type: toast.TYPE.SUCCESS});
             this.getInitialData();
         }
     }
@@ -136,7 +136,7 @@ export class Channel extends React.Component {
         this.setState({deleting: true});
         app.apiClient().deleteUserFromChannel(
             this.state.teamId, this.state.channelId, userId,
-            this.handleDeleteUserFromChannelApiResponse
+            (response) => this.handleDeleteUserFromChannelApiResponse(response, userId)
         );
     }
 
@@ -207,7 +207,8 @@ export class Channel extends React.Component {
     renderDeleteChannelModal(user) {
         return (
             <Modal
-                ref={this._modal}
+                key={user.id}
+                ref={(ref) => this._modals[user.id] = ref}
                 header="Quitar usuario del canal"
                 trigger={
                     <a href="javascript:void(0)" className="left-align">
@@ -279,7 +280,7 @@ export class Channel extends React.Component {
                                 </tr>
                                 </thead>
                                 <tbody>
-                                {this.state.users.map(user => {
+                                {this.state.users.map((user) => {
                                     return (
                                         <tr>
                                             <td>

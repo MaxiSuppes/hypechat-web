@@ -8,8 +8,9 @@ import {SignUp} from "../views/SignUp";
 import {NewTeam} from "../views/NewTeam";
 import {User} from "../views/User";
 import {Channels} from "../views/Channels";
-import {PrivateRoute} from "./PrivateRoute";
 import {Channel} from "../views/Channel";
+import {ForbiddenWords} from "../views/ForbiddenWords";
+import {PrivateRoute} from "./PrivateRoute";
 
 class Routes extends React.Component {
     render() {
@@ -22,6 +23,7 @@ class Routes extends React.Component {
                     <PrivateRoute exact path="/new-team" component={NewTeam}/>
                     <PrivateRoute exact path="/teams/:teamId" component={Team}/>
                     <PrivateRoute exact path="/teams/:teamId/users" component={Users}/>
+                    <PrivateRoute exact path="/teams/:teamId/forbidden-words" component={ForbiddenWords}/>
                     <PrivateRoute exact path="/teams/:teamId/users/:userId" component={User}/>
                     <PrivateRoute exact path="/teams/:teamId/channels" component={Channels}/>
                     <PrivateRoute exact path="/teams/:teamId/channels/:channelId" component={Channel}/>

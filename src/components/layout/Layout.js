@@ -86,7 +86,7 @@ class Layout extends React.Component {
                             <SideNavItem href={/teams/ + this.props.teamId + /channels/}>
                                 Canales
                             </SideNavItem>
-                            <SideNavItem href={/teams/ + this.props.teamId + /words/}>
+                            <SideNavItem href={/teams/ + this.props.teamId + /forbidden-words/}>
                                 Palabras prohibidas
                             </SideNavItem>
                             <SideNavItem divider/>

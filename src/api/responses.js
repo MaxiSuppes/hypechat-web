@@ -166,3 +166,25 @@ export class AddUserToChannelResponse extends Response {
         return this.status() !== 'ADDED';
     }
 }
+
+export class GetForbiddenWordsResponse extends Response {
+    hasError() {
+        return this.status() !== 'LIST';
+    }
+
+    words() {
+        return this.result()['forbidden_words'];
+    }
+}
+
+export class AddForbiddenWordResponse extends Response {
+    hasError() {
+        return this.status() !== 'ADDED';
+    }
+}
+
+export class RemoveForbiddenWordResponse extends Response {
+    hasError() {
+        return this.status() !== 'REMOVED';
+    }
+}

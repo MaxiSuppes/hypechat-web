@@ -10,6 +10,8 @@ export class Users extends React.Component {
     constructor(props) {
         super(props);
 
+        this._modals = {};
+
         this.state = {
             loading: true,
             sending: false,
@@ -48,12 +50,12 @@ export class Users extends React.Component {
         }
     }
 
-    handleDeleteUserApiResponse(response) {
+    handleDeleteUserApiResponse(response, userId) {
         if (response.hasError()) {
             toast("No se pudo eliminar al usuario del equipo", {type: toast.TYPE.ERROR});
         } else {
             this.setState({deleting: false});
-            this._modal.close();
+            this._modals[userId].hideModal();
             toast("Usuario eliminado del equipo", {type: toast.TYPE.SUCCESS});
         }
     }
@@ -66,7 +68,8 @@ export class Users extends React.Component {
 
     handleDeleteUser(userId) {
         this.setState({deleting: true});
-        app.apiClient().deleteUser(this.state.teamId, userId, this.handleDeleteUserApiResponse);
+        app.apiClient().deleteUser(this.state.teamId, userId,
+            (response) => this.handleDeleteUserApiResponse(response, userId));
     }
 
     showInviteButton() {
@@ -92,7 +95,7 @@ export class Users extends React.Component {
     renderDeleteUserModal(user) {
         return (
             <Modal
-                ref={this._modal}
+                ref={(ref) => this._modals[user.id] = ref}
                 header="Quitar usuario"
                 trigger={
                     <a href="javascript:void(0)" className="secondary-content">

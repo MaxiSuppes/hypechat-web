@@ -1,0 +1,50 @@
+.forbidden-word-container {
+    max-width: 600px;
+    margin: auto;
+    padding-top: 100px;
+}
+
+.forbidden-words-box {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-content: flex-start;
+    min-height: 200px;
+    min-width: 400px;
+    border-style: solid;
+    border-color: lightgray;
+    border-width: 1px;
+    padding: 3px;
+    margin-top: 30px;
+    margin-bottom: 30px;
+}
+
+.word-container {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    width: min-content;
+    height: min-content;
+    background-color: pink;
+    padding: 3px;
+    margin: 3px;
+    border-style: solid;
+    border-color: hotpink;
+    border-radius: 5px;
+    border-width: 2px;
+    opacity: 0.6;
+    box-shadow: -1px 1px 1px 0 grey;
+    font-weight: 700;
+    font-size: 13px;
+}
+
+.word-icon {
+    border-left-style: solid;
+    border-left-width: 1px;
+    border-left-color: gray;
+    margin-left: 4px;
+    cursor: pointer;
+    color: gray;
+    margin-top: 1px;
+    line-height: 0.8;
+}

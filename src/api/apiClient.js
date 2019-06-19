@@ -1,15 +1,16 @@
 import {
+    AddForbiddenWordResponse,
     AddUserToChannelResponse,
     CreateChannelResponse,
     CreateTeamResponse, DeleteChannelResponse, DeleteUserFromChannelResponse,
     DeleteUserResponse, EditChannelResponse,
     EditTeamResponse,
-    GetChannelsResponse,
+    GetChannelsResponse, GetForbiddenWordsResponse,
     GetTeamsResponse,
     GetUserResponse,
     GetUsersResponse,
     LoginUserResponse,
-    LogOutUserResponse,
+    LogOutUserResponse, RemoveForbiddenWordResponse,
     SignUpUserResponse
 } from "./responses";
 
@@ -121,6 +122,32 @@ export class ApiClient {
     deleteUser(teamId, userId, onResponse) {
         return this.api.deleteUser(teamId, userId).then(result => {
             const response = this.buildResponse({result: result, successResponseClass: DeleteUserResponse});
+            onResponse(response);
+        });
+    }
+
+    getForbiddenWords(teamId, onResponse) {
+        return this.api.getForbiddenWords(teamId).then(result => {
+            const response = this.buildResponse({result: result, successResponseClass: GetForbiddenWordsResponse});
+            onResponse(response);
+        });
+    }
+
+    addForbiddenWord(teamId, word, onResponse) {
+        const requestData = {
+            team_id: teamId,
+            word: word
+        };
+
+        return this.api.addForbiddenWord(requestData).then(result => {
+            const response = this.buildResponse({result: result, successResponseClass: AddForbiddenWordResponse});
+            onResponse(response);
+        });
+    }
+
+    deleteForbiddenWord(teamId, wordId, onResponse) {
+        return this.api.deleteForbiddenWord(teamId, wordId).then(result => {
+            const response = this.buildResponse({result: result, successResponseClass: RemoveForbiddenWordResponse});
             onResponse(response);
         });
     }
