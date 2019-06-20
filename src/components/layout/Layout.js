@@ -46,6 +46,23 @@ class Layout extends React.Component {
         }
     }
 
+    renderTeamOptions() {
+        if (this.props.teamId) {
+            return [
+                <SideNavItem href={/teams/ + this.props.teamId + /users/}>
+                    Usuarios
+                </SideNavItem>,
+                <SideNavItem href={/teams/ + this.props.teamId + /channels/}>
+                    Canales
+                </SideNavItem>,
+                <SideNavItem href={/teams/ + this.props.teamId + /forbidden-words/}>
+                    Palabras prohibidas
+                </SideNavItem>,
+                <SideNavItem divider/>
+            ]
+        }
+    }
+
     render() {
         return (
             <div>
@@ -73,25 +90,22 @@ class Layout extends React.Component {
                                     </Icon>
                                 </NavItem>
                             }
-                            options={{ closeOnClick: true }}>
+                            options={{closeOnClick: true, edge: 'right'}}>
                             <SideNavItem userView
                                          user={{
                                              background: noImage,
                                              image: defaultUserImage,
                                              name: this.userName(),
                                          }}/>
-                            <SideNavItem href={/teams/ + this.props.teamId + /users/}>
-                                Usuarios
+                            {this.renderTeamOptions()}
+                            <SideNavItem href='/home'>
+                                Inicio
                             </SideNavItem>
-                            <SideNavItem href={/teams/ + this.props.teamId + /channels/}>
-                                Canales
-                            </SideNavItem>
-                            <SideNavItem href={/teams/ + this.props.teamId + /forbidden-words/}>
-                                Palabras prohibidas
-                            </SideNavItem>
-                            <SideNavItem divider/>
                             <SideNavItem href='/teams'>
-                                Cambiar de equipo
+                                Todos los equipo
+                            </SideNavItem>
+                            <SideNavItem href='/new-team'>
+                                Crear equipo
                             </SideNavItem>
                         </SideNav>
                     </NavItem>

@@ -2,15 +2,20 @@ import {
     AddForbiddenWordResponse,
     AddUserToChannelResponse,
     CreateChannelResponse,
-    CreateTeamResponse, DeleteChannelResponse, DeleteUserFromChannelResponse,
-    DeleteUserResponse, EditChannelResponse,
+    CreateTeamResponse,
+    DeleteChannelResponse,
+    DeleteUserFromChannelResponse,
+    DeleteUserResponse,
+    EditChannelResponse,
     EditTeamResponse,
-    GetChannelsResponse, GetForbiddenWordsResponse,
+    GetChannelsResponse,
+    GetForbiddenWordsResponse,
     GetTeamsResponse,
     GetUserResponse,
     GetUsersResponse,
     LoginUserResponse,
-    LogOutUserResponse, RemoveForbiddenWordResponse,
+    LogOutUserResponse,
+    RemoveForbiddenWordResponse,
     SignUpUserResponse
 } from "./responses";
 
@@ -202,7 +207,7 @@ export class ApiClient {
         const getTeamUsersRequest = this.api.getUsers(teamId);
 
         let data = {};
-        Promise.all([getChannelsRequest, getChannelUsersRequest, getTeamUsersRequest]).then(function(results){
+        Promise.all([getChannelsRequest, getChannelUsersRequest, getTeamUsersRequest]).then(function (results) {
             data["channels"] = new GetChannelsResponse(results[0]);
             data["users"] = new GetUsersResponse(results[1]);
             data["teamUsers"] = new GetUsersResponse(results[2]);

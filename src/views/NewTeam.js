@@ -1,6 +1,7 @@
 import React from "react";
 import {Button, Card, Row, TextInput, Textarea, Preloader} from "react-materialize";
 import {app} from 'app/app';
+import Layout from "../components/layout/Layout";
 
 export class NewTeam extends React.Component {
     constructor(props) {
@@ -19,6 +20,7 @@ export class NewTeam extends React.Component {
         this.handleApiResponse = this.handleApiResponse.bind(this);
         this.handleInputChange = this.handleInputChange.bind(this);
         this.handleCreateTeam = this.handleCreateTeam.bind(this);
+        this.content = this.content.bind(this);
     }
 
     handleApiResponse(response) {
@@ -85,6 +87,6 @@ export class NewTeam extends React.Component {
     }
 
     render() {
-        return this.content();
+        return <Layout content={this.content} loading={this.state.loading}/>;
     }
 }

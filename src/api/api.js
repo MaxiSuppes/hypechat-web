@@ -1,5 +1,5 @@
 import {JsonEncoder, MultiPartEncoder} from "./encoders";
-import {DeleteUserResponse, ErrorResponse} from "./responses";
+import {ErrorResponse} from "./responses";
 
 export class Api {
     signUpUser(newUserData) {

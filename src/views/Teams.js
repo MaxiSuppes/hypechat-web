@@ -1,10 +1,10 @@
 import React from "react";
-import {Button, Collection, CollectionItem, Icon, Preloader, Row} from "react-materialize";
-import noImage from '../static/images/no-image.png';
-import {app} from "../app/app";
-import {ToastContainer} from 'react-toastify';
+import {Button, Collection, CollectionItem, Icon, Row} from "react-materialize";
 import 'react-toastify/dist/ReactToastify.css';
-import "../static/styles/layout.css";
+import Layout from "components/layout/Layout";
+import {app} from "app/app";
+import noImage from 'static/images/no-image.png';
+import "static/styles/layout.css";
 
 export class Teams extends React.Component {
     constructor(props) {
@@ -17,6 +17,7 @@ export class Teams extends React.Component {
 
         this.handleApiResponse = this.handleApiResponse.bind(this);
         this.handleCreateTeam = this.handleCreateTeam.bind(this);
+        this.content = this.content.bind(this);
     }
 
     handleApiResponse(response) {
@@ -74,32 +75,22 @@ export class Teams extends React.Component {
     }
 
     content() {
-        if (this.state.loading) {
-            return <Preloader size="big" />;
-        } else {
-            return (
-                <div>
-                    <Row>
-                        {this.showTeams()}
-                        {this.noTeamsMessage()}
-                    </Row>
-                    <Row className="center-align">
-                        <Button m={6} s={12} className="button" onClick={this.handleCreateTeam} large>
-                            Crear un equipo
-                        </Button>
-                    </Row>
-                </div>
-            )
-        }
+        return (
+            <div className="section-container">
+                <Row>
+                    {this.showTeams()}
+                    {this.noTeamsMessage()}
+                </Row>
+                <Row className="center-align">
+                    <Button m={6} s={12} className="button" onClick={this.handleCreateTeam} large>
+                        Crear un equipo
+                    </Button>
+                </Row>
+            </div>
+        )
     }
 
     render() {
-        return (
-            <div className="section-container">
-                <ToastContainer/>
-                {this.content()}
-            </div>
-        );
-
+        return <Layout content={this.content} loading={this.state.loading}/>;
     }
 }
