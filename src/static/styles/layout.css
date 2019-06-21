@@ -40,3 +40,7 @@ body {
     margin: auto;
     padding-top: 100px;
 }
+
+.back-to-team {
+    display: flex;
+}

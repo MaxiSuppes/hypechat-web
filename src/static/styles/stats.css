@@ -1,0 +1,10 @@
+.stats-container {
+    max-width: 900px;
+    margin: auto;
+    padding-top: 100px;
+}
+
+.indicator-number {
+    font-size: 50px;
+    font-weight: 600;
+}

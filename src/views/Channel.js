@@ -5,17 +5,17 @@ import {
     Button,
     Card,
     Checkbox,
+    Col,
+    Icon,
+    Modal,
     Preloader,
     Row,
-    Textarea,
-    TextInput,
-    Col,
-    Table,
-    Modal,
-    Icon,
-    Tabs,
+    Select,
     Tab,
-    Select
+    Table,
+    Tabs,
+    Textarea,
+    TextInput
 } from "react-materialize";
 import {toast} from "react-toastify";
 import 'static/styles/channel.css';

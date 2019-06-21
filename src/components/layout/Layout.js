@@ -1,12 +1,13 @@
 import React from "react";
-import {Icon, Navbar, NavItem, Preloader, SideNav, SideNavItem} from "react-materialize";
-import "../../static/styles/layout.css";
-import noImage from "../../static/images/no-image.png"
-import defaultUserImage from "../../static/images/default-user.png"
-import {ToastContainer} from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
-import {app} from "../../app/app";
+import {Row, Icon, Navbar, NavItem, Preloader, SideNav, SideNavItem} from "react-materialize";
 import {withRouter} from "react-router-dom";
+import {ToastContainer, toast} from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
+import {app} from "app/app";
+import noImage from "static/images/no-image.png"
+import defaultUserImage from "static/images/default-user.png"
+import "static/styles/layout.css";
 
 class Layout extends React.Component {
     constructor(props) {
@@ -22,7 +23,7 @@ class Layout extends React.Component {
 
     handleLogoutResponse(response) {
         if (response.hasError()) {
-            console.log("No se pudo desloguear");
+            toast("No se pudo desloguear. Vuelva a intentarlo más tarde", {type: toast.TYPE.ERROR});
         } else {
             sessionStorage.removeItem("X-Auth-Token");
             sessionStorage.removeItem("userName");
@@ -37,9 +38,9 @@ class Layout extends React.Component {
     renderContent() {
         if (this.props.loading) {
             return (
-                <div>
-                    <Preloader size="big" />
-                </div>
+                <Row style={{"margin-top": "50px"}}>
+                    <Preloader color="green" size="big"/>
+                </Row>
             )
         } else {
             return this.props.content();
@@ -63,13 +64,27 @@ class Layout extends React.Component {
         }
     }
 
+    renderBackToTeam() {
+        const teamId = this.props.teamId;
+        if (teamId && this.props.history.location.pathname !== ('/teams/' + teamId)) {
+            return(
+                <a className="back-to-team" href={/teams/ + this.props.teamId}>
+                    <Icon className="back-to-team-icon">
+                        arrow_back_ios
+                    </Icon>
+                    <span>Volver al equipo</span>
+                </a>
+            )
+        }
+    }
+
     render() {
         return (
             <div>
                 <ToastContainer/>
                 <Navbar className="nav-bar"
                         brand={
-                            <a className="brand-logo" href={/teams/}>
+                            <a className="brand-logo" href={/home/}>
                                 Hypechat
                             </a>
                         }
@@ -110,7 +125,8 @@ class Layout extends React.Component {
                         </SideNav>
                     </NavItem>
                 </Navbar>
-                <main>
+                <main style={{"padding": "50px", "display": "flex"}}>
+                    {this.renderBackToTeam()}
                     {this.renderContent()}
                 </main>
             </div>
