@@ -161,7 +161,7 @@ export class DeleteUserFromChannelResponse extends Response {
     }
 }
 
-export class AddUserToChannelResponse extends Response {
+export class AddUserResponse extends Response {
     hasError() {
         return this.status() !== 'ADDED';
     }

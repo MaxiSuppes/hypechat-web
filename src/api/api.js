@@ -14,6 +14,10 @@ export class Api {
         throw new Error("You have to implement the method");
     }
 
+    getUsers() {
+        throw new Error("You have to implement the method");
+    }
+
     getTeams() {
         throw new Error("You have to implement the method");
     }
@@ -26,11 +30,11 @@ export class Api {
         throw new Error("You have to implement the method");
     }
 
-    getUsers(teamId) {
+    getTeamUsers(teamId) {
         throw new Error("You have to implement the method");
     }
 
-    inviteUser(teamId, userData) {
+    addUserToTeam(userData) {
         throw new Error("You have to implement the method");
     }
 
@@ -101,6 +105,10 @@ export class RemoteApi extends Api {
         return this.call({resourceUrl: '/users/logout', method: "POST", withAuthorization: true});
     }
 
+    getUsers() {
+        return this.call({resourceUrl: '/users', withAuthorization: true});
+    }
+
     getTeams() {
         return this.call({resourceUrl: '/users/teams', withAuthorization: true});
     }
@@ -113,12 +121,12 @@ export class RemoteApi extends Api {
         return this.call({resourceUrl: '/teams/' + teamId, method: "PATCH", body: newTeamData, withAuthorization: true})
     }
 
-    getUsers(teamId) {
+    getTeamUsers(teamId) {
         return this.call({resourceUrl: '/teams/' + teamId + '/users', withAuthorization: true});
     }
 
-    inviteUser(teamId, userData) {
-        return this.call({resourceUrl: '/teams/' + teamId + '/invite', method: 'POST', body: userData, withAuthorization: true});
+    addUserToTeam(userData) {
+        return this.call({resourceUrl: '/teams/users', method: 'POST', body: userData, withAuthorization: true});
     }
 
     getUser(teamId, userId) {
@@ -224,7 +232,7 @@ export class FakeApi extends Api {
         super(props);
 
         this.token = 'AS45234ASF236rehfda24534';
-        this.organizations = {
+        this.teams = {
             1:
                 {
                     name: 'Eryx Cooperativa',
@@ -289,20 +297,20 @@ export class FakeApi extends Api {
         });
     }
 
-    getOrganizations() {
+    getTeams() {
         let self = this;
         return new Promise(function (resolve, reject) {
             setTimeout(function(){
-                resolve(new FakeResponse({'organizations': self.organizations}).successResponse());
+                resolve(new FakeResponse({'teams': self.teams}).successResponse());
             }, 1000);
         });
     }
 
-    getOrganization(organizationId) {
+    getTeam(teamId) {
         let self = this;
         return new Promise(function (resolve, reject) {
             setTimeout(function(){
-                resolve(new FakeResponse({'organization': self.organizations[organizationId]}).successResponse());
+                resolve(new FakeResponse({'team': self.teams[teamId]}).successResponse());
             }, 1000);
         });
     }

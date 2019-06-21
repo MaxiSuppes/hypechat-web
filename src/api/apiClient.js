@@ -1,6 +1,6 @@
 import {
     AddForbiddenWordResponse,
-    AddUserToChannelResponse,
+    AddUserResponse,
     CreateChannelResponse,
     CreateTeamResponse,
     DeleteChannelResponse,
@@ -57,6 +57,13 @@ export class ApiClient {
         });
     }
 
+    getUsers(onResponse) {
+        return this.api.getUsers().then(result => {
+            const response = this.buildResponse({result: result, successResponseClass: GetUsersResponse});
+            onResponse(response);
+        });
+    }
+
     getTeams(onResponse) {
         return this.api.getTeams().then(result => {
             const response = this.buildResponse({result: result, successResponseClass: GetTeamsResponse});
@@ -99,20 +106,33 @@ export class ApiClient {
         });
     }
 
-    getUsers(teamId, onResponse) {
-        return this.api.getUsers(teamId).then(result => {
+    getTeamUsers(teamId, onResponse) {
+        return this.api.getTeamUsers(teamId).then(result => {
             const response = this.buildResponse({result: result, successResponseClass: GetUsersResponse});
             onResponse(response);
         });
     }
 
-    inviteUser(teamId, email, onResponse) {
+    getTeamUsersInitialData(teamId, onResponse) {
+        const getTeamUsersRequest = this.api.getTeamUsers(teamId);
+        const getAllUsersRequest = this.api.getUsers();
+
+        let data = {};
+        Promise.all([getTeamUsersRequest, getAllUsersRequest]).then(function (results) {
+            data["teamUsers"] = new GetUsersResponse(results[0]);
+            data["allUsers"] = new GetUsersResponse(results[1]);
+            onResponse(data);
+        });
+    }
+
+    addUserToTeam(teamId, userId, onResponse) {
         const requestData = {
-            "email": email,
+            "team_id": teamId,
+            "add_user_id": userId,
         };
 
-        return this.api.inviteUser(teamId, requestData).then(result => {
-            const response = this.buildResponse({result: result, successResponseClass: GetUsersResponse});
+        return this.api.addUserToTeam(requestData).then(result => {
+            const response = this.buildResponse({result: result, successResponseClass: AddUserResponse});
             onResponse(response);
         });
     }
@@ -204,7 +224,7 @@ export class ApiClient {
     getChannelInitialData(teamId, channelId, onResponse) {
         const getChannelsRequest = this.api.getChannels(teamId);
         const getChannelUsersRequest = this.api.getChannelUsers(teamId, channelId);
-        const getTeamUsersRequest = this.api.getUsers(teamId);
+        const getTeamUsersRequest = this.api.getTeamUsers(teamId);
 
         let data = {};
         Promise.all([getChannelsRequest, getChannelUsersRequest, getTeamUsersRequest]).then(function (results) {
@@ -230,7 +250,7 @@ export class ApiClient {
         };
 
         return this.api.addUserToChannel(requestData).then(result => {
-            const response = this.buildResponse({result: result, successResponseClass: AddUserToChannelResponse});
+            const response = this.buildResponse({result: result, successResponseClass: AddUserResponse});
             onResponse(response);
         });
     }

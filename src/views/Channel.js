@@ -169,7 +169,7 @@ export class Channel extends React.Component {
     }
 
     renderInviteButton() {
-        if (this.state.sending) {
+        if (this.state.saving) {
             return <Preloader size="small"/>;
         } else {
             return (

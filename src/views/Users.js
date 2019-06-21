@@ -1,10 +1,10 @@
 import React from 'react';
-import Layout from "../components/layout/Layout";
-import {CollectionItem, Row, Col, Collection, Icon, TextInput, Preloader, Button, Modal} from "react-materialize";
-import {app} from '../app/app';
-import "../static/styles/users.css";
-import defaultUserImage from '../static/images/default-user.png';
+import {Button, Col, Collection, CollectionItem, Icon, Modal, Preloader, Row, Select} from "react-materialize";
 import {toast} from 'react-toastify';
+import {app} from 'app/app';
+import Layout from "components/layout/Layout";
+import defaultUserImage from 'static/images/default-user.png';
+import "static/styles/users.css";
 
 export class Users extends React.Component {
     constructor(props) {
@@ -14,40 +14,42 @@ export class Users extends React.Component {
 
         this.state = {
             loading: true,
-            sending: false,
+            saving: false,
             deleting: false,
             teamId: props.match.params.teamId,
-            users: [],
-            emailToSend: undefined
+            teamUsers: [],
+            allUsers: [],
+            userToAdd: undefined
         };
 
         this.handleApiResponse = this.handleApiResponse.bind(this);
-        this.handleInviteUserApiResponse = this.handleInviteUserApiResponse.bind(this);
         this.handleDeleteUserApiResponse = this.handleDeleteUserApiResponse.bind(this);
-        this.handleInviteUser = this.handleInviteUser.bind(this);
         this.handleDeleteUser = this.handleDeleteUser.bind(this);
+        this.handleAddUserResponse = this.handleAddUserResponse.bind(this);
+        this.handleAddUser = this.handleAddUser.bind(this);
+        this.handleSelect = this.handleSelect.bind(this);
         this.content = this.content.bind(this);
     }
 
     handleApiResponse(response) {
-        if (response.hasError()) {
-            this.setState({users: []});
+        const teamUsersResponse = response['teamUsers'];
+        const allUsersResponse = response['allUsers'];
+        if (teamUsersResponse.hasError() || allUsersResponse.hasError()) {
         } else {
-            this.setState({users: response.users(), loading: false});
+            this.setState({
+                teamUsers: teamUsersResponse.users(),
+                allUsers: allUsersResponse.users(),
+                loading: false
+            });
         }
     }
 
-    componentWillMount() {
-        app.apiClient().getUsers(this.state.teamId, this.handleApiResponse);
+    getInitialData() {
+        app.apiClient().getTeamUsersInitialData(this.state.teamId, this.handleApiResponse);
     }
 
-    handleInviteUserApiResponse(response) {
-        if (response.hasError()) {
-            toast("No se pudo enviar la invitación", {type: toast.TYPE.ERROR});
-        } else {
-            toast("Invitación enviada", {type: toast.TYPE.SUCCESS});
-            this.setState({sending: false});
-        }
+    componentDidMount() {
+        this.getInitialData();
     }
 
     handleDeleteUserApiResponse(response, userId) {
@@ -60,28 +62,10 @@ export class Users extends React.Component {
         }
     }
 
-    handleInviteUser(event) {
-        event.preventDefault();
-        this.setState({sending: true});
-        app.apiClient().inviteUser(this.state.teamId, this.state.emailToSend, this.handleInviteUserApiResponse);
-    }
-
     handleDeleteUser(userId) {
         this.setState({deleting: true});
         app.apiClient().deleteUser(this.state.teamId, userId,
             (response) => this.handleDeleteUserApiResponse(response, userId));
-    }
-
-    showInviteButton() {
-        if (this.state.sending) {
-            return <Preloader size="small"/>;
-        } else {
-            return (
-                <Button className="button" type="submit" small>
-                    Invitar
-                </Button>
-            )
-        }
     }
 
     renderDeleteButton(user) {
@@ -114,15 +98,55 @@ export class Users extends React.Component {
         )
     }
 
+    handleAddUserResponse(response) {
+        this.setState({saving: false});
+
+        if (response.hasError()) {
+            toast("No se pudo agregar al usuario al equipo", {type: toast.TYPE.ERROR});
+        } else {
+            toast("Usuario agregado al equipo", {type: toast.TYPE.SUCCESS});
+            this.getInitialData();
+        }
+    }
+
+    handleAddUser(event) {
+        event.preventDefault();
+        if (this.state.userToAdd === 0) {
+            this.setState({errorMessage: "Selecciona un usuario del listado"});
+            return;
+        }
+
+        this.setState({saving: true});
+        app.apiClient().addUserToTeam(this.state.teamId, this.state.userToAdd, this.handleAddUserResponse);
+    }
+
+    handleSelect(event) {
+        event.preventDefault();
+        this.setState({userToAdd: event.target.value});
+    }
+
+    renderInviteButton() {
+        if (this.state.saving) {
+            return <Preloader size="small"/>;
+        } else {
+            return (
+                <Button className="button" type="submit" small>
+                    Agregar
+                </Button>
+            )
+        }
+    }
+
     content() {
         return (
             <div className="invite-container">
                 <Row>
                     <Collection>
-                        {this.state.users.map(user => {
+                        {this.state.teamUsers.map(user => {
                             const teamId = this.state.teamId;
                             return (
-                                <CollectionItem key={user.id} className="avatar" href={/teams/ + teamId + /users/ + user.id}>
+                                <CollectionItem key={user.id} className="avatar"
+                                                href={/teams/ + teamId + /users/ + user.id}>
                                     <img src={defaultUserImage} alt="" className="circle"/>
                                     <span className="title">
                                         {user.username}
@@ -136,15 +160,25 @@ export class Users extends React.Component {
                         })}
                     </Collection>
                 </Row>
-                <Row className="invite-form">
-                    <form onSubmit={this.handleInviteUser}>
+                <Row className="invite-user-form">
+                    <form onSubmit={this.handleAddUser}>
                         <Col s={8}>
-                            <TextInput type="email" label="Email"
-                                       onChange={(event) => this.setState({emailToSend: event.target.value})}
-                                       validate required/>
+                            <Select value={this.state.userToAdd || "disabled"}
+                                    onChange={this.handleSelect} label="Seleccionar usuario">
+                                <option value="disabled" disabled>
+                                    Nombre de usuario
+                                </option>
+                                {this.state.allUsers.map(user => {
+                                    return (
+                                        <option value={user.id}>
+                                            {user.username || user['first_name'] + user['last_name']}
+                                        </option>
+                                    )
+                                })}
+                            </Select>
                         </Col>
                         <Col s={4} className="invite-button">
-                            {this.showInviteButton()}
+                            {this.renderInviteButton()}
                         </Col>
                     </form>
                 </Row>
