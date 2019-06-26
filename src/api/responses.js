@@ -101,6 +101,22 @@ export class GetUsersResponse extends Response {
     users() {
         return this._result['users'];
     }
+
+    usersByDate() {
+        let usersByDay = {};
+        const actualDate = new Date();
+
+        this.users().forEach(user => {
+            const userCreationDate = new Date(user['created']);
+            if (userCreationDate.getFullYear() === actualDate.getFullYear() && userCreationDate.getMonth() === actualDate.getMonth()) {
+                let usersInSameDay = usersByDay[userCreationDate.getDate()] || 0;
+                usersByDay[userCreationDate.getDate()] = usersInSameDay + 1;
+            }
+        });
+
+
+        return usersByDay;
+    }
 }
 
 export class GetUserResponse extends Response {
@@ -186,5 +202,31 @@ export class AddForbiddenWordResponse extends Response {
 export class RemoveForbiddenWordResponse extends Response {
     hasError() {
         return this.status() !== 'REMOVED';
+    }
+}
+
+export class GetMessagesStatsResponse extends Response {
+    hasError() {
+        return this.status() !== 'STATS';
+    }
+
+    messagesByTeam() {
+        return this.result()['messages'];
+    }
+}
+
+export class GetBotsResponse extends Response {
+    hasError() {
+        return this.status() !== 'LIST';
+    }
+
+    bots() {
+        return this.result()['bots'];
+    }
+}
+
+export class CreateBotResponse extends Response {
+    hasError() {
+        return this.status() !== 'OK';
     }
 }

@@ -34,6 +34,10 @@ export class Api {
         throw new Error("You have to implement the method");
     }
 
+    getBots(teamId) {
+        throw new Error("You have to implement the method");
+    }
+
     addUserToTeam(userData) {
         throw new Error("You have to implement the method");
     }
@@ -84,6 +88,14 @@ export class Api {
     addUserToChannel(requestData) {
         throw new Error("You have to implement the method");
     }
+
+    getMessagesStats() {
+        throw new Error("You have to implement the method");
+    }
+
+    createBot(newBotData) {
+        throw new Error("You have to implement the method");
+    }
 }
 
 
@@ -106,7 +118,7 @@ export class RemoteApi extends Api {
     }
 
     getUsers() {
-        return this.call({resourceUrl: '/users', withAuthorization: true});
+        return this.call({resourceUrl: '/stats/users', withAuthorization: true});
     }
 
     getTeams() {
@@ -127,6 +139,10 @@ export class RemoteApi extends Api {
 
     addUserToTeam(userData) {
         return this.call({resourceUrl: '/teams/users', method: 'POST', body: userData, withAuthorization: true});
+    }
+
+    getBots(teamId) {
+        return this.call({resourceUrl: '/teams/' + teamId + '/bots', withAuthorization: true});
     }
 
     getUser(teamId, userId) {
@@ -182,6 +198,14 @@ export class RemoteApi extends Api {
 
     addUserToChannel(requestData) {
         return this.call({resourceUrl: '/teams/channels/users', method: 'POST', body: requestData, withAuthorization: true});
+    }
+
+    getMessagesStats() {
+        return this.call({resourceUrl: '/stats/messages', withAuthorization: true});
+    }
+
+    createBot(newBotData) {
+        return this.call({resourceUrl: '/teams/bots', method: 'POST', body: newBotData, withAuthorization: true});
     }
 
     private

@@ -59,6 +59,9 @@ class Layout extends React.Component {
                 <SideNavItem href={/teams/ + this.props.teamId + /forbidden-words/}>
                     Palabras prohibidas
                 </SideNavItem>,
+                <SideNavItem href={/teams/ + this.props.teamId + /bots/}>
+                    Bots
+                </SideNavItem>,
                 <SideNavItem divider/>
             ]
         }
@@ -125,7 +128,7 @@ class Layout extends React.Component {
                         </SideNav>
                     </NavItem>
                 </Navbar>
-                <main style={{"padding": "50px", "display": "flex"}}>
+                <main style={{"padding": "50px"}}>
                     {this.renderBackToTeam()}
                     {this.renderContent()}
                 </main>

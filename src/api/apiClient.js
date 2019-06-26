@@ -1,6 +1,7 @@
 import {
     AddForbiddenWordResponse,
     AddUserResponse,
+    CreateBotResponse,
     CreateChannelResponse,
     CreateTeamResponse,
     DeleteChannelResponse,
@@ -8,8 +9,10 @@ import {
     DeleteUserResponse,
     EditChannelResponse,
     EditTeamResponse,
+    GetBotsResponse,
     GetChannelsResponse,
     GetForbiddenWordsResponse,
+    GetMessagesStatsResponse,
     GetTeamsResponse,
     GetUserResponse,
     GetUsersResponse,
@@ -137,6 +140,13 @@ export class ApiClient {
         });
     }
 
+    getBots(teamId, onResponse) {
+        return this.api.getBots(teamId).then(result => {
+            const response = this.buildResponse({result: result, successResponseClass: GetBotsResponse});
+            onResponse(response);
+        });
+    }
+
     getUser(teamId, userId, onResponse) {
         return this.api.getUser(teamId, userId).then(result => {
             const response = this.buildResponse({result: result, successResponseClass: GetUserResponse});
@@ -251,6 +261,38 @@ export class ApiClient {
 
         return this.api.addUserToChannel(requestData).then(result => {
             const response = this.buildResponse({result: result, successResponseClass: AddUserResponse});
+            onResponse(response);
+        });
+    }
+
+    getMessagesStats(onResponse) {
+        return this.api.getMessagesStats().then(result => {
+            const response = this.buildResponse({result: result, successResponseClass: GetMessagesStatsResponse});
+            onResponse(response);
+        });
+    }
+
+    getStatsInitialData(onResponse) {
+        const getAllUsersRequest = this.api.getUsers();
+        const getMessagesStatsRequest = this.api.getMessagesStats();
+
+        let data = {};
+        Promise.all([getAllUsersRequest, getMessagesStatsRequest]).then(function (results) {
+            data["users"] = new GetUsersResponse(results[0]);
+            data["messages"] = new GetMessagesStatsResponse(results[1]);
+            onResponse(data);
+        });
+    }
+
+    createBot(teamId, newBotData, onResponse) {
+        const requestData = {
+            team_id: teamId,
+            name: newBotData['name'],
+            url: newBotData['url']
+        };
+
+        return this.api.createBot(requestData).then(result => {
+            const response = this.buildResponse({result: result, successResponseClass: CreateBotResponse});
             onResponse(response);
         });
     }

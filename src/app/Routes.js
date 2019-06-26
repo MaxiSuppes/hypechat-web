@@ -11,6 +11,7 @@ import {Channels} from "views/Channels";
 import {Channel} from "views/Channel";
 import {ForbiddenWords} from "views/ForbiddenWords";
 import {Stats} from "views/Stats";
+import {Bots} from "views/Bots";
 import {PrivateRoute} from "./PrivateRoute";
 
 class Routes extends React.Component {
@@ -24,6 +25,7 @@ class Routes extends React.Component {
                     <PrivateRoute exact path="/teams" component={Teams}/>
                     <PrivateRoute exact path="/new-team" component={NewTeam}/>
                     <PrivateRoute exact path="/teams/:teamId" component={Team}/>
+                    <PrivateRoute exact path="/teams/:teamId/bots" component={Bots}/>
                     <PrivateRoute exact path="/teams/:teamId/users" component={Users}/>
                     <PrivateRoute exact path="/teams/:teamId/forbidden-words" component={ForbiddenWords}/>
                     <PrivateRoute exact path="/teams/:teamId/users/:userId" component={User}/>
