@@ -103,17 +103,25 @@ export class GetUsersResponse extends Response {
     }
 
     usersByDate() {
-        let usersByDay = {};
+        let usersByDay = [];
         const actualDate = new Date();
+
+        const lastMonth = new Date(actualDate.getFullYear(), actualDate.getMonth() + 1, 0);
+        const lastDayInMonth = lastMonth.getDate();
+        for (let day = 1; day <= lastDayInMonth; day++) {
+            usersByDay.push({
+                "users": 0,
+                "day": day
+            });
+        }
 
         this.users().forEach(user => {
             const userCreationDate = new Date(user['created']);
             if (userCreationDate.getFullYear() === actualDate.getFullYear() && userCreationDate.getMonth() === actualDate.getMonth()) {
-                let usersInSameDay = usersByDay[userCreationDate.getDate()] || 0;
-                usersByDay[userCreationDate.getDate()] = usersInSameDay + 1;
+                let usersInSameDay = usersByDay[userCreationDate.getDate()]['users'];
+                usersByDay[userCreationDate.getDate()]['users'] = usersInSameDay + 1;
             }
         });
-
 
         return usersByDay;
     }
@@ -212,6 +220,16 @@ export class GetMessagesStatsResponse extends Response {
 
     messagesByTeam() {
         return this.result()['messages'];
+    }
+
+    messagesQuantity() {
+        let messagesQuantity = 0;
+        this.messagesByTeam().forEach(message => {
+            messagesQuantity += message['direct'];
+            messagesQuantity += message['channel'];
+        });
+
+        return messagesQuantity;
     }
 }
 

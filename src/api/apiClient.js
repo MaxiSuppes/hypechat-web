@@ -275,11 +275,13 @@ export class ApiClient {
     getStatsInitialData(onResponse) {
         const getAllUsersRequest = this.api.getUsers();
         const getMessagesStatsRequest = this.api.getMessagesStats();
+        const getTeamsRequest = this.api.getTeams();
 
         let data = {};
-        Promise.all([getAllUsersRequest, getMessagesStatsRequest]).then(function (results) {
+        Promise.all([getAllUsersRequest, getMessagesStatsRequest, getTeamsRequest]).then(function (results) {
             data["users"] = new GetUsersResponse(results[0]);
             data["messages"] = new GetMessagesStatsResponse(results[1]);
+            data["teams"] = new GetTeamsResponse(results[2]);
             onResponse(data);
         });
     }
