@@ -48,7 +48,7 @@ export class Login extends React.Component {
         if (this.state.loading) {
             return (
                 <Row className="center-align">
-                    <Preloader size="big" />
+                    <Preloader color="green" size="big" />
                 </Row>
             )
         } else {

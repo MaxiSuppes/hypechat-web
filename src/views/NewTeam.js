@@ -48,7 +48,7 @@ export class NewTeam extends React.Component {
 
     showCreateTeamButton() {
         if (this.state.loading) {
-            return <Preloader size="big" />
+            return <Preloader color="green" size="big" />
         } else {
             return (
                 <Button m={6} s={12} className="button" type="submit" large>

@@ -19,6 +19,7 @@ export class Stats extends React.Component {
         };
 
         this.handleInitialDataResponse = this.handleInitialDataResponse.bind(this);
+        this.processData = this.processData.bind(this);
         this.content = this.content.bind(this);
     }
 
@@ -34,11 +35,18 @@ export class Stats extends React.Component {
                 usersByDate: usersResponse.usersByDate(),
                 messages: messagesResponse.messagesByTeam(),
                 messagesQuantity: messagesResponse.messagesQuantity(),
-                teams: teamsResponse.teams(),
-                loading: false
-            });
+                teams: teamsResponse.teams()
+            }, this.processData);
         }
     }
+
+    processData() {
+        this.state.messages.forEach(message => {
+            message['team'] = this.state.teams.filter(team => team.id === message['team_id'])[0]['team_name'];
+        });
+        this.setState({loading: false});
+    }
+
 
     componentDidMount() {
         app.apiClient().getStatsInitialData(this.handleInitialDataResponse);
@@ -75,7 +83,7 @@ export class Stats extends React.Component {
                         <XAxis dataKey="day">
                             <Label value="Días del mes" offset={0} position="insideBottom"/>
                         </XAxis>
-                        <YAxis label={{value: 'Cantidad de usuarios', angle: -90, position: 'topLeft'}}/>
+                        <YAxis/>
                         <Tooltip/>
                         <Line type="monotone" dataKey="users" stroke="#8884d8"/>
                     </LineChart>
@@ -84,10 +92,12 @@ export class Stats extends React.Component {
                     <h4>Mensajes enviados</h4>
                     <BarChart width={750} height={300} data={this.state.messages}>
                         <CartesianGrid strokeDasharray="3 3"/>
-                        <XAxis dataKey="team_id"/>
+                        <XAxis dataKey="team">
+                            <Label value="Equipo" offset={0} position="insideBottom"/>
+                        </XAxis>
                         <YAxis/>
                         <Tooltip/>
-                        <Legend/>
+                        <Legend verticalAlign="top"/>
                         <Bar dataKey="channel" fill="#8884d8"/>
                         <Bar dataKey="direct" fill="#82ca9d"/>
                     </BarChart>

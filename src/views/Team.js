@@ -1,6 +1,7 @@
 import React from "react";
 import Layout from "../components/layout/Layout";
 import {app} from '../app/app';
+import {toast} from 'react-toastify';
 import {Button, Card, Preloader, Row, Textarea, TextInput} from "react-materialize";
 
 export class Team extends React.Component {
@@ -18,6 +19,7 @@ export class Team extends React.Component {
         this.handleInitialDataResponse = this.handleInitialDataResponse.bind(this);
         this.handleTeamEditResponse = this.handleTeamEditResponse.bind(this);
         this.handleEdit = this.handleEdit.bind(this);
+        this.getInitialData = this.getInitialData.bind(this);
         this.content = this.content.bind(this);
         this.team = this.team.bind(this);
     }
@@ -32,16 +34,22 @@ export class Team extends React.Component {
         }
     }
 
-    componentDidMount() {
+    getInitialData() {
         app.apiClient().getTeams(this.handleInitialDataResponse);
     }
 
-    handleTeamEditResponse(response) {
-        if (response.hasError()) {
-            console.log(response);
-        }
+    componentDidMount() {
+        this.getInitialData();
+    }
 
+    handleTeamEditResponse(response) {
         this.setState({saving: false});
+        if (response.hasError()) {
+            toast("No se pudo editar al usuario", {type: toast.TYPE.ERROR});
+        } else {
+            toast("Guardado", {type: toast.TYPE.SUCCESS});
+            this.getInitialData();
+        }
     }
 
     handleEdit(event) {
@@ -65,7 +73,7 @@ export class Team extends React.Component {
 
     showSaveButton() {
         if (this.state.saving) {
-            return <Preloader size="big" />
+            return <Preloader color="green" size="big" />
         } else {
             return (
                 <Button m={6} s={12} className="button" type="submit" large>

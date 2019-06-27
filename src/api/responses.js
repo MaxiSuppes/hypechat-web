@@ -107,7 +107,7 @@ export class GetUsersResponse extends Response {
     }
 
     users() {
-        return this._result['users'];
+        return this._result['users'].filter(user => user['role'] !== "ADMIN");
     }
 
     usersByDate() {

@@ -1,5 +1,5 @@
 import React from 'react';
-import {Button, Col, Collection, CollectionItem, Preloader, Row, Select} from "react-materialize";
+import {Button, Col, Collection, CollectionItem, Icon, Preloader, Row, Select} from "react-materialize";
 import {toast} from 'react-toastify';
 import {app} from 'app/app';
 import Layout from "components/layout/Layout";
@@ -111,7 +111,11 @@ export class Users extends React.Component {
 
     renderInviteButton() {
         if (this.state.saving) {
-            return <Preloader size="small"/>;
+            return (
+                <div style={{"margin-top": "20px"}}>
+                    <Preloader color="green" size="small"/>
+                </div>
+            );
         } else {
             return (
                 <Button className="button" type="submit" small>
@@ -121,29 +125,49 @@ export class Users extends React.Component {
         }
     }
 
+    renderUsers() {
+        return (
+            <Row>
+                <Collection>
+                    {this.state.teamUsers.map(user => {
+                        const teamId = this.state.teamId;
+                        return (
+                            <CollectionItem key={user.id} className="avatar"
+                                            href={/teams/ + teamId + /users/ + user.id}>
+                                <img src={defaultUserImage} alt="" className="circle"/>
+                                <span className="title">
+                                        {user.username}
+                                    </span>
+                                <p>
+                                    Rol: {user.role}
+                                </p>
+                                {this.renderDeleteUserModal(user)}
+                            </CollectionItem>
+                        )
+                    })}
+                </Collection>
+            </Row>
+        )
+    }
+
+    noUsersMessage() {
+        if (this.state.teamUsers.length === 0) {
+            return (
+                <div className="center-align">
+                    <Icon large>
+                        info
+                    </Icon>
+                    <p>Aún no hay usuarios en el equipo.</p>
+                </div>
+            )
+        }
+    }
+
     content() {
         return (
             <div className="invite-container">
-                <Row>
-                    <Collection>
-                        {this.state.teamUsers.map(user => {
-                            const teamId = this.state.teamId;
-                            return (
-                                <CollectionItem key={user.id} className="avatar"
-                                                href={/teams/ + teamId + /users/ + user.id}>
-                                    <img src={defaultUserImage} alt="" className="circle"/>
-                                    <span className="title">
-                                        {user.username}
-                                    </span>
-                                    <p>
-                                        Rol: {user.role}
-                                    </p>
-                                    {this.renderDeleteUserModal(user)}
-                                </CollectionItem>
-                            )
-                        })}
-                    </Collection>
-                </Row>
+                {this.renderUsers()}
+                {this.noUsersMessage()}
                 <Row className="invite-user-form">
                     <form onSubmit={this.handleAddUser}>
                         <Col s={8}>
@@ -161,7 +185,7 @@ export class Users extends React.Component {
                                 })}
                             </Select>
                         </Col>
-                        <Col s={4} className="invite-button">
+                        <Col s={4}>
                             {this.renderInviteButton()}
                         </Col>
                     </form>
