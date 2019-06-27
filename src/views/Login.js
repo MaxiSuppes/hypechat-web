@@ -27,7 +27,7 @@ export class Login extends React.Component {
         } else {
             toast("Holaa!", {type: toast.TYPE.SUCCESS});
             sessionStorage.setItem("userName", response.user()['username']);
-            this.props.history.push("/teams");
+            this.props.history.push("/home");
         }
     }
 
@@ -44,7 +44,7 @@ export class Login extends React.Component {
         }
     }
 
-    showLoginButton() {
+    renderLoginButton() {
         if (this.state.loading) {
             return (
                 <Row className="center-align">
@@ -84,7 +84,7 @@ export class Login extends React.Component {
                                 {this.state.errorMessage}
                             </p>
                         </Row>
-                        {this.showLoginButton()}
+                        {this.renderLoginButton()}
                     </form>
                 </Card>
             </div>

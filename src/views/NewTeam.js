@@ -66,7 +66,7 @@ export class NewTeam extends React.Component {
                         <Row>
                             <TextInput s={12} m={6} type="text" label="Nombre"
                                        onChange={this.handleInputChange('name')} validate required/>
-                            <TextInput s={12} m={6} type="text" label="País"
+                            <TextInput s={12} m={6} type="text" label="Ubicación"
                                        onChange={this.handleInputChange('location')} validate/>
                         </Row>
                         <Row>

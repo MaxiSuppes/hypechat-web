@@ -85,7 +85,7 @@ export class Team extends React.Component {
                                        defaultValue={this.state.actualTeam['team_name'].toString()}
                                        onChange={this.handleInputChange('name')}
                                        validate required/>
-                            <TextInput s={12} m={6} type="text" label="País"
+                            <TextInput s={12} m={6} type="text" label="Ubicación"
                                        defaultValue={this.state.actualTeam['location']}
                                        onChange={this.handleInputChange('location')}
                                        validate/>

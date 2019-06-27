@@ -110,7 +110,7 @@ export class RemoteApi extends Api {
     }
 
     loginUser(loginData) {
-        return this.call({resourceUrl: '/users/login', method: "POST", body:loginData, headersToHandle: ['X-Auth-Token']});
+        return this.call({resourceUrl: '/users/login', method: "POST", body: loginData, headersToHandle: ['X-Auth-Token']});
     }
 
     logOutUser() {
@@ -235,7 +235,7 @@ export class RemoteApi extends Api {
         return fetch(this.url + resourceUrl, requestOptions).then((response) => {
             if (headersToHandle.length > 0) this.handleHeaders(response, headersToHandle);
 
-            if (response.status !== 200) {
+            if (response.status === 500) {
                 return new ErrorResponse(response);
             }
 

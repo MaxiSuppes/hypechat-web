@@ -10,7 +10,7 @@ export class ErrorResponse {
     }
 
     error() {
-        return this._message;
+        return "Ocurrió un error. Por favor intentálo de nuevo más tarde";
     }
 }
 
@@ -38,7 +38,15 @@ class Response {
 
 export class SignUpUserResponse extends Response {
     hasError() {
-        return this.status() === 'ALREADY_REGISTERED';
+        return this.status() !== 'ACTIVE';
+    }
+
+    error() {
+        if (this.status() === 'ALREADY_REGISTERED') {
+            return "Ya existe un usuario con ese email o nombre de usuario";
+        }
+
+        return "Ocurrió un error al crear el usuario. Por favor intentálo más tarde";
     }
 
     user() {
@@ -48,7 +56,7 @@ export class SignUpUserResponse extends Response {
 
 export class LoginUserResponse extends Response {
     hasError() {
-        return this.status() !== 'ACTIVE';
+        return this.status() !== 'ACTIVE' || this.user()['role'] !== 'ADMIN'
     }
 
     user() {
