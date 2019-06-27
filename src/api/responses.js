@@ -197,6 +197,14 @@ export class AddUserResponse extends Response {
     hasError() {
         return this.status() !== 'ADDED';
     }
+
+    error() {
+        if (this.status() === 'ALREADY_REGISTERED') {
+            return "El usuario ya está agregado";
+        }
+
+        return "No se pudo agregar al usuario";
+    }
 }
 
 export class GetForbiddenWordsResponse extends Response {

@@ -28,7 +28,7 @@ export class SignUp extends React.Component {
         } else {
             toast("Bienvenido", {type: toast.TYPE.SUCCESS});
             sessionStorage.setItem("userName", response.user()['username']);
-            this.props.history.push("/teams");
+            this.props.history.push("/home");
         }
     }
 

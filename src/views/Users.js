@@ -1,10 +1,11 @@
 import React from 'react';
-import {Button, Col, Collection, CollectionItem, Icon, Modal, Preloader, Row, Select} from "react-materialize";
+import {Button, Col, Collection, CollectionItem, Preloader, Row, Select} from "react-materialize";
 import {toast} from 'react-toastify';
 import {app} from 'app/app';
 import Layout from "components/layout/Layout";
 import defaultUserImage from 'static/images/default-user.png';
 import "static/styles/users.css";
+import {ConfirmationModal} from "../components/ConfirmationModal";
 
 export class Users extends React.Component {
     constructor(props) {
@@ -53,49 +54,32 @@ export class Users extends React.Component {
     }
 
     handleDeleteUserApiResponse(response, userId) {
+        this.setState({deleting: false});
         if (response.hasError()) {
             toast("No se pudo eliminar al usuario del equipo", {type: toast.TYPE.ERROR});
         } else {
-            this.setState({deleting: false});
             this._modals[userId].hideModal();
             toast("Usuario eliminado del equipo", {type: toast.TYPE.SUCCESS});
+            this.getInitialData();
         }
     }
 
     handleDeleteUser(userId) {
         this.setState({deleting: true});
         app.apiClient().deleteUser(this.state.teamId, userId,
-            (response) => this.handleDeleteUserApiResponse(response, userId));
-    }
-
-    renderDeleteButton(user) {
-        if (this.state.deleting) {
-            return <Preloader size="small"/>;
-        } else {
-            return <Button className="button" onClick={() => this.handleDeleteUser(user.id)} small> Confirmar </Button>;
-        }
+            (response) => this.handleDeleteUserApiResponse(response, userId)
+        );
     }
 
     renderDeleteUserModal(user) {
+        const text = <p> Esto quitará al usuario <b>{user.username}</b> del equipo.</p>;
         return (
-            <Modal
-                ref={(ref) => this._modals[user.id] = ref}
-                header="Quitar usuario"
-                trigger={
-                    <a href="javascript:void(0)" className="secondary-content">
-                        <Icon>
-                            delete
-                        </Icon>
-                    </a>}
-                actions={[
-                    <Button className="button" modal="close" style={{"marginRight": "10px"}} small> Cancelar </Button>,
-                    this.renderDeleteButton(user)]}>
-                <p>
-                    Esto quitará al usuario <b>{user.username}</b> del equipo.
-                </p>
-            </Modal>
-
-        )
+            <ConfirmationModal ref={(ref) => this._modals[user.id] = ref}
+                               header="Quitar usuario"
+                               text={text}
+                               handleConfirm={() => this.handleDeleteUser(user.id)}
+                               loading={this.state.deleting}/>
+        );
     }
 
     handleAddUserResponse(response) {

@@ -38,7 +38,7 @@ class Layout extends React.Component {
     renderContent() {
         if (this.props.loading) {
             return (
-                <Row style={{"margin-top": "50px"}}>
+                <Row className="center-align" style={{"margin-top": "50px"}}>
                     <Preloader color="green" size="big"/>
                 </Row>
             )
@@ -120,7 +120,7 @@ class Layout extends React.Component {
                                 Inicio
                             </SideNavItem>
                             <SideNavItem href='/teams'>
-                                Todos los equipo
+                                Todos los equipos
                             </SideNavItem>
                             <SideNavItem href='/new-team'>
                                 Crear equipo

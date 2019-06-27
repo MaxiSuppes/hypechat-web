@@ -1,24 +1,10 @@
 import React from "react";
 import Layout from "components/layout/Layout";
 import {app} from 'app/app';
-import {
-    Button,
-    Card,
-    Checkbox,
-    Col,
-    Icon,
-    Modal,
-    Preloader,
-    Row,
-    Select,
-    Tab,
-    Table,
-    Tabs,
-    Textarea,
-    TextInput
-} from "react-materialize";
+import {Button, Card, Checkbox, Col, Preloader, Row, Select, Tab, Table, Tabs, Textarea, TextInput} from "react-materialize";
 import {toast} from "react-toastify";
 import 'static/styles/channel.css';
+import {ConfirmationModal} from "../components/ConfirmationModal";
 
 export class Channel extends React.Component {
     constructor(props) {
@@ -85,12 +71,12 @@ export class Channel extends React.Component {
     }
 
     handleChannelEditResponse(response) {
+        this.setState({saving: false});
         if (response.hasError()) {
             toast("Hubo un error al guardar. Vuelva a intentarlo más tarde", {type: toast.TYPE.ERROR});
         } else {
             toast("Guardado", {type: toast.TYPE.SUCCESS});
         }
-        this.setState({saving: false});
     }
 
     handleEdit(event) {
@@ -122,10 +108,10 @@ export class Channel extends React.Component {
     }
 
     handleDeleteUserFromChannelApiResponse(response, userId) {
+        this.setState({deleting: false});
         if (response.hasError()) {
             toast("No se pudo eliminar al usuario del canal", {type: toast.TYPE.ERROR});
         } else {
-            this.setState({deleting: false});
             this._modals[userId].hideModal();
             toast("Usuario eliminado del canal", {type: toast.TYPE.SUCCESS});
             this.getInitialData();
@@ -141,10 +127,10 @@ export class Channel extends React.Component {
     }
 
     handleAddUserResponse(response) {
+        this.setState({saving: false});
         if (response.hasError()) {
-            toast("No se pudo agregar al usuario al canal", {type: toast.TYPE.ERROR});
+            toast(response.error(), {type: toast.TYPE.ERROR});
         } else {
-            this.setState({saving: false});
             toast("Usuario agregado al canal", {type: toast.TYPE.SUCCESS});
             this.getInitialData();
         }
@@ -170,7 +156,7 @@ export class Channel extends React.Component {
 
     renderInviteButton() {
         if (this.state.saving) {
-            return <Preloader size="small"/>;
+            return <Preloader color="green" size="small"/>;
         } else {
             return (
                 <Button className="button" type="submit" small>
@@ -182,7 +168,7 @@ export class Channel extends React.Component {
 
     renderSaveButton() {
         if (this.state.saving) {
-            return <Preloader size="big"/>
+            return <Preloader color="green" size="big"/>
         } else {
             return (
                 <Button m={6} s={12} className="button" type="submit" large>
@@ -192,39 +178,16 @@ export class Channel extends React.Component {
         }
     }
 
-    renderDeleteButton(user) {
-        if (this.state.deleting) {
-            return <Preloader size="small"/>;
-        } else {
-            return (
-                <Button className="button" onClick={() => this.handleDeleteUserFromChannel(user.id)} small>
-                    Confirmar
-                </Button>
-            );
-        }
-    }
-
     renderDeleteChannelModal(user) {
+        const text = <p>Esto quitará al usuario <b>{user['username']}</b> del canal.</p>;
         return (
-            <Modal
-                key={user.id}
-                ref={(ref) => this._modals[user.id] = ref}
-                header="Quitar usuario del canal"
-                trigger={
-                    <a href="javascript:void(0)" className="left-align">
-                        <Icon>
-                            delete
-                        </Icon>
-                    </a>}
-                actions={[
-                    <Button className="button" modal="close" style={{"marginRight": "10px"}} small> Cancelar </Button>,
-                    this.renderDeleteButton(user)]}>
-                <p>
-                    Esto quitará al usuario <b>{user['username']}</b> del canal.
-                </p>
-            </Modal>
-
-        )
+            <ConfirmationModal key={user.id}
+                               ref={(ref) => this._modals[user.id] = ref}
+                               header="Quitar usuario del canal"
+                               text={text}
+                               handleConfirm={() => this.handleDeleteUserFromChannel(user.id)}
+                               loading={this.state.deleting}/>
+        );
     }
 
     content() {
@@ -289,7 +252,7 @@ export class Channel extends React.Component {
                                             <td>
                                                 {user['username']}
                                             </td>
-                                            <td>
+                                            <td style={{"float": "left"}}>
                                                 {this.renderDeleteChannelModal(user)}
                                             </td>
                                         </tr>

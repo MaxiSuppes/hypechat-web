@@ -1,16 +1,17 @@
 import React from 'react';
 import Layout from "../components/layout/Layout";
-import {CollectionItem, Row, Col, Collection, Icon, TextInput, Preloader, Button, Modal, Checkbox} from "react-materialize";
+import {Button, Checkbox, Col, Collection, CollectionItem, Icon, Preloader, Row, TextInput} from "react-materialize";
 import {app} from '../app/app';
 import "../static/styles/users.css";
 import defaultUserImage from '../static/images/default-user.png';
 import {toast} from 'react-toastify';
+import {ConfirmationModal} from "../components/ConfirmationModal";
 
 export class Channels extends React.Component {
     constructor(props) {
         super(props);
 
-        this._modal = React.createRef();
+        this._modals = {};
 
         this.state = {
             loading: true,
@@ -52,12 +53,12 @@ export class Channels extends React.Component {
         app.apiClient().getChannels(this.state.teamId, this.handleGetChannelsResponse);
     }
 
-    handleDeleteChannelApiResponse(response) {
+    handleDeleteChannelApiResponse(response, channelId) {
+        this.setState({deleting: false});
         if (response.hasError()) {
             toast("No se pudo eliminar el canal del equipo", {type: toast.TYPE.ERROR});
         } else {
-            this.setState({deleting: false});
-            this._modal.current.hideModal();
+            this._modals[channelId].hideModal();
             toast("Canal eliminado del equipo", {type: toast.TYPE.SUCCESS});
             this.getChannels();
         }
@@ -65,11 +66,11 @@ export class Channels extends React.Component {
 
     handleDeleteChannel(channelId) {
         this.setState({deleting: true});
-        app.apiClient().deleteChannel(this.state.teamId, channelId, this.handleDeleteChannelApiResponse);
+        app.apiClient().deleteChannel(this.state.teamId, channelId,
+            (response) => this.handleDeleteChannelApiResponse(response, channelId));
     }
 
     handleCreateChannelApiResponse(response) {
-        console.log("response", response);
         this.setState({saving: false});
         if (response.hasError()) {
             toast("No se pudo crear el canal. Vuelva a intentarlo más tarde", {type: toast.TYPE.ERROR});
@@ -103,38 +104,15 @@ export class Channels extends React.Component {
         this.setState({newChannelData: newChannelData});
     }
 
-    renderDeleteButton(channel) {
-        if (this.state.deleting) {
-            return <Preloader size="small"/>;
-        } else {
-            return (
-                <Button className="button" onClick={() => this.handleDeleteChannel(channel.id)} small>
-                    Confirmar
-                </Button>
-            );
-        }
-    }
-
     renderDeleteChannelModal(channel) {
+        const text = <p>Esto eliminará el canal <b>{channel.name}</b> del equipo.</p>;
         return (
-            <Modal
-                ref={this._modal}
-                header="Eliminar canal"
-                trigger={
-                    <a href="javascript:void(0)" className="secondary-content">
-                        <Icon>
-                            delete
-                        </Icon>
-                    </a>}
-                actions={[
-                    <Button className="button" modal="close" style={{"marginRight": "10px"}} small> Cancelar </Button>,
-                    this.renderDeleteButton(channel)]}>
-                <p>
-                    Esto eliminará el canal <b>{channel.name}</b> del equipo.
-                </p>
-            </Modal>
-
-        )
+            <ConfirmationModal ref={(ref) => this._modals[channel.id] = ref}
+                               header="Eliminar canal"
+                               text={text}
+                               handleConfirm={() => this.handleDeleteChannel(channel.id)}
+                               loading={this.state.deleting}/>
+        );
     }
 
     renderChannels() {
@@ -147,6 +125,10 @@ export class Channels extends React.Component {
                             <img src={defaultUserImage} alt="" className="circle"/>
                             <span className="title">
                                 {channel.name}
+                            </span>
+                            <br/>
+                            <span style={{"color": "gray"}}>
+                                {channel.visibility === 'PRIVATE' ? 'privado' : 'público'}
                             </span>
                             {this.renderDeleteChannelModal(channel)}
                         </CollectionItem>
@@ -171,7 +153,7 @@ export class Channels extends React.Component {
 
     renderCreateChannelButton() {
         if (this.state.saving) {
-            return <Preloader size="small"/>;
+            return <Preloader color="green" size="small"/>;
         } else {
             return (
                 <Button className="button" type="submit" small>

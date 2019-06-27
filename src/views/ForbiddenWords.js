@@ -4,6 +4,7 @@ import Layout from "components/layout/Layout";
 import {app} from 'app/app';
 import {toast} from "react-toastify";
 import 'static/styles/words.css';
+import {ConfirmationModal} from "../components/ConfirmationModal";
 
 export class ForbiddenWords extends React.Component {
     constructor(props) {
@@ -35,7 +36,7 @@ export class ForbiddenWords extends React.Component {
         if (response.hasError()) {
             this.setState({forbiddenWords: []});
         } else {
-            this.setState({forbiddenWords: response.words(), loading: false, reloading: false});
+            this.setState({forbiddenWords: response.words(), loading: false, reloading: false, errorMessage: ''});
         }
     }
 
@@ -66,6 +67,7 @@ export class ForbiddenWords extends React.Component {
         event.preventDefault();
         this.setState({adding: true});
         if (this.state.newWord.includes(' ')) {
+            this.setState({adding: false});
             this.setState({errorMessage: 'La palabra no debe contener espacios'});
         } else {
             app.apiClient().addForbiddenWord(this.state.teamId, this.state.newWord, this.handleAddWordResponse);
@@ -73,10 +75,10 @@ export class ForbiddenWords extends React.Component {
     }
 
     handleDeleteWordApiResponse(response, wordId) {
+        this.setState({deleting: false});
         if (response.hasError()) {
             toast("No se pudo eliminar la palabra", {type: toast.TYPE.ERROR});
         } else {
-            this.setState({deleting: false});
             this._modals[wordId].hideModal();
             toast("Palabra prohibida eliminada", {type: toast.TYPE.SUCCESS});
             this.getInitialData();
@@ -91,45 +93,33 @@ export class ForbiddenWords extends React.Component {
         );
     }
 
-    renderDeleteButton(word) {
-        if (this.state.deleting) {
-            return <Preloader size="small"/>;
-        } else {
-            return (
-                <Button className="button" onClick={() => this.deleteWord(word.id)} small>
-                    Confirmar
-                </Button>
-            );
-        }
-    }
-
     renderDeleteWordModal(word) {
+        const text = <p>Esto quitará la palabra prohibida <b>{word.word}</b>.</p>;
+        const trigger = (
+            <a className="word-icon">
+                <Icon tiny>
+                    close
+                </Icon>
+            </a>
+        );
         return (
-            <Modal
-                key={word.id}
-                ref={(ref) => this._modals[word.id] = ref}
-                header="Quitar la palabra del listado"
-                trigger={
-                    <a className="word-icon">
-                        <Icon tiny>
-                            close
-                        </Icon>
-                    </a>
-                }
-                actions={[
-                    <Button className="button" modal="close" style={{"marginRight": "10px"}} small> Cancelar </Button>,
-                    this.renderDeleteButton(word)]}>
-                <p>
-                    Esto quitará la palabra prohibida <b>{word.word}</b>.
-                </p>
-            </Modal>
-
-        )
+            <ConfirmationModal key={word.id}
+                               ref={(ref) => this._modals[word.id] = ref}
+                               header="Quitar la palabra del listado"
+                               trigger={trigger}
+                               text={text}
+                               handleConfirm={() => this.deleteWord(word.id)}
+                               loading={this.state.deleting}/>
+        );
     }
 
     renderWordList() {
         if (this.state.reloading) {
-            return <Preloader size="small"/>;
+            return (
+                <Row className="center-align">
+                    <Preloader color="green" size="small"/>
+                </Row>
+            );
         } else {
             return this.state.forbiddenWords.map(word => {
                 return (
@@ -143,8 +133,8 @@ export class ForbiddenWords extends React.Component {
     }
 
     renderAddButton() {
-        if (this.state.saving) {
-            return <Preloader size="small"/>;
+        if (this.state.adding) {
+            return <Preloader color="green" size="small"/>;
         } else {
             return (
                 <Button className="button" type="submit" small>
@@ -168,10 +158,15 @@ export class ForbiddenWords extends React.Component {
                                            error={this.state.errorMessage}
                                            validate required/>
                             </Col>
-                            <Col s={4} className="invite-button">
+                            <Col s={4}>
                                 {this.renderAddButton()}
                             </Col>
                         </form>
+                    </Row>
+                    <Row className="center-align">
+                        <p style={{'color': 'red'}}>
+                            {this.state.errorMessage}
+                        </p>
                     </Row>
                 </Card>
             </div>
